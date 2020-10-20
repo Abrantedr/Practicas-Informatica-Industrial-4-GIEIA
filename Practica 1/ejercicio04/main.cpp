@@ -88,9 +88,9 @@ int main(int argc, char *argv[]) {
   if (mayores.empty()) {
     std::cerr << "No existe ningun elemento mayor que " << pivote << std::endl;
   } else {
-    for (int elemento: mayores)
-      std::cout << elemento << ", ";
     std::cout << std::endl;
+    for (int elemento: mayores)
+      std::cout << elemento << std::endl;
   }
 
   std::cout << "Menores: ";
@@ -98,9 +98,9 @@ int main(int argc, char *argv[]) {
   if (menores.empty()) {
     std::cerr << "No existe ningun elemento menor que " << pivote << std::endl;
   } else {
-    for (int elemento: menores)
-      std::cout << elemento << ", ";
     std::cout << std::endl;
+    for (int elemento: menores)
+      std::cout << elemento << std::endl;
   }
 
   std::cout << "Iguales: " << iguales << std::endl;
