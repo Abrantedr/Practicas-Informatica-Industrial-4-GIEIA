@@ -1,4 +1,4 @@
-// Ejercicio 11
+// Ejercicio 11 - All tests passed!
 // Autor: Rubén Abrante Delgado
 // Fecha: 20/10/2020
 
