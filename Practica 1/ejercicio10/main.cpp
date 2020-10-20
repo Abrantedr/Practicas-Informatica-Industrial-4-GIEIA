@@ -1,4 +1,4 @@
-// Ejercicio 10
+// Ejercicio 10 - All tests passed!
 // Autor: Rubén Abrante Delgado
 // Fecha: 19/10/2020
 
@@ -43,22 +43,12 @@ std::vector<bool> vectorStringABool(std::vector<std::string>& vector) {
   return vectorBool;
 }
 
-// Convierte un vector de bool a un string de ceros y unos
+// Convierte un vector de bool a un string de ceros y unos y lo invierte
 unsigned long long vectorBoolABinarioString(std::vector<bool>& vector,
                                   unsigned inicialv,
                                   unsigned finalv) {
   std::string binario;
-  // Conversión directa a entero.
-  // Un unsigned genera demasiados problemas
-  int ini = (int) inicialv;
-  int fin = (int) finalv;
-  // En caso de que el rango sea un solo número
-  if (ini == fin) {
-    binario += (vector.at(ini)) ? "1" : "0";
-    std::cerr << "El numero binario es: " << binario << std::endl;
-    return std::stoull(binario, nullptr, 2);
-  }
-  for (int i = ini; i <= fin; i++) {
+  for (int i = inicialv; i <= finalv; i++) {
     binario += (vector.at(i)) ? "1" : "0";
   }
   std::cerr << "El numero binario es: " << binario << std::endl;
@@ -157,6 +147,9 @@ int main(int argc, char *argv[]) {
         << std::endl;
     return 5;
   }
+  std::cerr << "Los limites son " << inicialv
+      << " para el valor inicial" << " y " << finalv
+      << " para el valor final" << std::endl;
 
   unsigned long long bin = 0;
   // Intentamos conseguir el valor entero del vector de bool
