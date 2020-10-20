@@ -15,17 +15,22 @@ int cuantosBitsUno(int registro) {
   return cuantos;
 }
 
+// Devuelve el formato de salida '<bits a uno> 0x<hexadecimal>'
+void formatoSalida(int num) {
+  std::cout << cuantosBitsUno(num) << " 0x" << std::hex << num << std::endl;
+}
+
 int main() {
   int num = 0;
   std::cin >> num;
   if (num < 0)
     return 2;
   while (std::cin.good()) {
-    if (num == 0)
+    if (num == 0) {
+      formatoSalida(num);
       return 0;
-    else {
-      std::cout << cuantosBitsUno(num) << " 0x" << std::hex
-          << std::uppercase << num << std::endl;
+    } else {
+      formatoSalida(num);
       std::cin >> num;
       if (num < 0)
         return 2;
