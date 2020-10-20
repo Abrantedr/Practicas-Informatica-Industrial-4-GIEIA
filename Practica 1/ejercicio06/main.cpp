@@ -147,7 +147,7 @@ int main(int argc, char *argv[]) {
   archivoMenores.replace(archivoMenores.end() - 4,
                          archivoMenores.end(),
                          "_menores.dat");
-  // Vuelca el vector de mayores al archivo
+  // Vuelca el vector de menores al archivo
   volcarVector(archivoMenores, menores);
 
   std::cout << "Pivote: " << pivote << std::endl;
