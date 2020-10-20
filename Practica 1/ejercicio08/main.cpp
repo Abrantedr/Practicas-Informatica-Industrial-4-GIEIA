@@ -17,7 +17,8 @@ int cuantosBitsUno(int registro) {
 
 // Devuelve el formato de salida '<bits a uno> 0x<hexadecimal>'
 void formatoSalida(int num) {
-  std::cout << cuantosBitsUno(num) << " 0x" << std::hex << num << std::endl;
+  int bits = cuantosBitsUno(num);
+  std::cout << std::dec << bits << " 0x" << std::hex << num << std::endl;
 }
 
 int main() {
