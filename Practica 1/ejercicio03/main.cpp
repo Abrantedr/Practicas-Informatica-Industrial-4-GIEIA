@@ -1,4 +1,4 @@
-// Ejercicio 03
+// Ejercicio 03 - All tests passed!
 // Autor: Rubén Abrante Delgado
 // Fecha: 19/10/2020
 

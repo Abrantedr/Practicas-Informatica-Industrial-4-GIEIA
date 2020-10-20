@@ -1,4 +1,4 @@
-// Ejercicio 09
+// Ejercicio 09 - All tests passed!
 // Autor: Rubén Abrante Delgado
 // Fecha: 19/10/2020
 
