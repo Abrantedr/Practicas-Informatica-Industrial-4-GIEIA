@@ -48,7 +48,7 @@ unsigned long long vectorBoolABinarioString(std::vector<bool>& vector,
                                   unsigned inicialv,
                                   unsigned finalv) {
   std::string binario;
-  for (int i = inicialv; i <= finalv; i++) {
+  for (unsigned i = inicialv; i <= finalv; i++) {
     binario += (vector.at(i)) ? "1" : "0";
   }
   std::cerr << "El numero binario es: " << binario << std::endl;
