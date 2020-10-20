@@ -19,16 +19,23 @@ std::string aBinario(unsigned n) {
   return binario;
 }
 
+// Devuelve el formato de salida '<bits a uno> 0x<hexadecimal>'
+void formatoSalida(unsigned num) {
+  std::string bits = aBinario(num);
+  std::cout << bits << " 0x" << std::hex << num << std::endl;
+}
+
 int main() {
   unsigned num = 0;
   std::cin >> num;
   if ((int) num < 0)
     return 2;
   while (std::cin.good()) {
-    if (num == 0)
+    if (num == 0) {
+      formatoSalida(num);
       return 0;
-    else {
-      std::cout << aBinario(num) << " 0x" << std::hex << num << std::endl;
+    } else {
+      formatoSalida(num);
       std::cin >> num;
       if ((int) num < 0)
         return 2;
