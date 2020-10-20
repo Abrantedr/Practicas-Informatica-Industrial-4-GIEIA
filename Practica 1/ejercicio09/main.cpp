@@ -28,8 +28,7 @@ int main() {
     if (num == 0)
       return 0;
     else {
-      std::cout << aBinario(num) << " 0x" << std::hex << std::uppercase
-          << num << std::endl;
+      std::cout << aBinario(num) << " 0x" << std::hex << num << std::endl;
       std::cin >> num;
       if ((int) num < 0)
         return 2;
