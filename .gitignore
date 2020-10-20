@@ -1,0 +1,4 @@
+# CMake files
+.idea/
+cmake-build-debug/
+*.txt
