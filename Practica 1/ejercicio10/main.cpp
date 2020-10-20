@@ -43,7 +43,7 @@ unsigned long long vectorBoolABinarioString(std::vector<bool>& vector,
   // Un unsigned genera demasiados problemas
   int ini = (int) inicialv;
   int fin = (int) finalv;
-  for (int i = fin - 1; i >= ini; i--) {
+  for (int i = fin; i >= ini; i--) {
     binario += (vector.at(i)) ? "1" : "0";
   }
   return std::stoull(binario, nullptr, 2);
