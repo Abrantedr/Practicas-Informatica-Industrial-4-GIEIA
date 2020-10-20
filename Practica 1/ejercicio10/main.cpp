@@ -58,7 +58,7 @@ unsigned long long vectorBoolABinarioString(std::vector<bool>& vector,
     std::cerr << "El numero binario es: " << binario << std::endl;
     return std::stoull(binario, nullptr, 2);
   }
-  for (int i = ini; i < fin; i++) {
+  for (int i = ini; i <= fin; i++) {
     binario += (vector.at(i)) ? "1" : "0";
   }
   std::cerr << "El numero binario es: " << binario << std::endl;
@@ -127,7 +127,7 @@ int main(int argc, char *argv[]) {
    * tendrán un valor de 0 y el tamaño del vector, respectivamente
    * En otro caso, usaremos los valores pasados por parámetros */
   unsigned inicialv = 0;
-  unsigned finalv = vectorBool.size();
+  unsigned finalv = vectorBool.size() - 1;
 
   if (argc >= 3) {
     try {
