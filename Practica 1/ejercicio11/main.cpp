@@ -33,8 +33,10 @@ int main() {
   if (num < 0)
     return 1;
   while (std::cin.good()) {
-    if (!num)
+    if (!num) {
+      std::cout << "F, ";
       return 0;
+    }
     vector = enteroAVectorBool(num);
     muestraVectorBool(vector);
     std::cin >> num;
