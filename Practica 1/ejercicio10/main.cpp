@@ -8,6 +8,15 @@
 #include <vector>
 #include <algorithm>
 
+// Muestra un vector por std::cerr, del tipo que sea
+template <class T> void muestraVector(const std::vector<T> &vector) {
+  std::cerr << "El vector contiene: ";
+  for (const T& k: vector) {
+    std::cerr << k << ", ";
+  }
+  std::cerr << std::endl;
+}
+
 // Convierte un número entero a binario
 std::string aBinario(unsigned n) {
   std::string binario;
@@ -43,9 +52,19 @@ unsigned long long vectorBoolABinarioString(std::vector<bool>& vector,
   // Un unsigned genera demasiados problemas
   int ini = (int) inicialv;
   int fin = (int) finalv;
-  for (int i = fin; i >= ini; i--) {
+  // En caso de que el rango sea un solo número
+  if (ini == fin) {
+    binario += (vector.at(ini)) ? "1" : "0";
+    std::cerr << "El numero binario es: " << binario << std::endl;
+    return std::stoull(binario, nullptr, 2);
+  }
+  for (int i = ini; i < fin; i++) {
     binario += (vector.at(i)) ? "1" : "0";
   }
+  std::cerr << "El numero binario es: " << binario << std::endl;
+  std::reverse(binario.begin(), binario.end());
+  std::cerr << "El numero binario (al reves) es: " << binario
+      << std::endl;
   return std::stoull(binario, nullptr, 2);
 
 }
@@ -83,7 +102,7 @@ int main(int argc, char *argv[]) {
 
   if (!file.good()) {
     std::cerr << "El archivo no ha podido abrirse o no existe"
-              << std::endl;
+        << std::endl;
     return 2;
   }
 
@@ -97,9 +116,12 @@ int main(int argc, char *argv[]) {
     vector.push_back(dato);
     file >> dato;
   }
+  muestraVector<std::string>(vector);
 
   // Convertimos el vector de string en bool
   std::vector<bool> vectorBool = vectorStringABool(vector);
+  muestraVector<bool>(vectorBool);
+
 
   /* Si no se han pasado los valores inicial y final,
    * tendrán un valor de 0 y el tamaño del vector, respectivamente
@@ -107,10 +129,14 @@ int main(int argc, char *argv[]) {
   unsigned inicialv = 0;
   unsigned finalv = vectorBool.size();
 
-  if (argc >= 4) {
+  if (argc >= 3) {
     try {
-      inicialv = std::stoi(argv[2]);
-      finalv = std::stoi(argv[3]);
+      if (argc >= 4) {
+        inicialv = std::stoi(argv[2]);
+        finalv = std::stoi(argv[3]);
+      } else {
+        inicialv = std::stoi(argv[2]);
+      }
     } catch (std::invalid_argument& e) {
       std::cerr << "Argumento invalido (el valor inicial '"
                 << argv[2] << " o el valor final '" << argv[3]
