@@ -39,7 +39,9 @@ unsigned long long vectorBoolABinarioString(std::vector<bool>& vector,
                                   unsigned inicialv,
                                   unsigned finalv) {
   std::string binario;
-  for (unsigned i = finalv; i >= inicialv; i--) {
+  int ini = (int) inicialv;
+  int fin = (int) finalv;
+  for (unsigned i = fin; i >= ini; i--) {
     binario += (vector.at(i)) ? "1" : "0";
   }
   return std::stoull(binario, nullptr, 2);
