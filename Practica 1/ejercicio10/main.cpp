@@ -39,7 +39,7 @@ unsigned long long vectorBoolABinarioString(std::vector<bool>& vector,
                                   unsigned inicialv,
                                   unsigned finalv) {
   std::string binario;
-  for (unsigned i = inicialv; i < finalv; i++) {
+  for (unsigned i = finalv; i >= inicialv; i--) {
     binario += (vector.at(i)) ? "1" : "0";
   }
   return std::stoull(binario, nullptr, 2);
@@ -145,8 +145,8 @@ int main(int argc, char *argv[]) {
   }
 
   // Mostramos el resultado por pantalla
-  std::cout << bin << " 0x" << std::hex << std::uppercase << bin
-            << " 0b" << aBinario(bin) << std::endl;
+  std::cout << bin << " 0x" << std::hex << bin << " 0b" << aBinario(bin)
+      << std::endl;
 
   return 0;
 }
