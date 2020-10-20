@@ -83,22 +83,21 @@ int main(int argc, char *argv[]) {
   int iguales = mayoresMenoresIguales(vector, mayores, menores, pivote);
 
   std::cout << "Pivote: " << pivote << std::endl;
-  std::cout << "Mayores: ";
+  std::cout << "Mayores: " << std::endl;
 
   if (mayores.empty()) {
     std::cerr << "No existe ningun elemento mayor que " << pivote << std::endl;
   } else {
-    std::cout << std::endl;
+
     for (int elemento: mayores)
       std::cout << elemento << std::endl;
   }
 
-  std::cout << "Menores: ";
+  std::cout << "Menores: " << std::endl;
 
   if (menores.empty()) {
     std::cerr << "No existe ningun elemento menor que " << pivote << std::endl;
   } else {
-    std::cout << std::endl;
     for (int elemento: menores)
       std::cout << elemento << std::endl;
   }
