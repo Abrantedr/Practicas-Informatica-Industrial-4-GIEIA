@@ -26,7 +26,6 @@ void muestraVectorBool(const std::vector<bool>& vectorBool) {
 }
 
 int main() {
-
   std::vector<bool> vector;
   int num = 0;
   std::cin >> num;

@@ -9,7 +9,7 @@
 #include <algorithm>
 
 // Muestra un vector por std::cerr, del tipo que sea
-template <class T> void muestraVector(const std::vector<T> &vector) {
+template <class T> void muestraVector(const std::vector<T>& vector) {
   std::cerr << "El vector contiene: ";
   for (const T& k: vector) {
     std::cerr << k << ", ";
@@ -67,7 +67,9 @@ unsigned long long vectorBoolABinarioString(std::vector<bool>& vector,
 *
 * @return Verdadero si contiene el sufijo, falso si no lo contiene.
 */
-bool tieneSufijo(const std::string &archivo, const std::string &sufijo) {
+bool tieneSufijo(const std::string& archivo,
+                 const std::string& sufijo) {
+
   return archivo.size() >= sufijo.size() &&
          archivo.compare(archivo.size() - sufijo.size(),
                          sufijo.size(), sufijo) == 0;
@@ -77,7 +79,7 @@ int main(int argc, char *argv[]) {
 
   if (argc < 2) {
     std::cerr << "No se ha especificado el nombre del archivo"
-              << std::endl;
+        << std::endl;
     return 1;
   }
 
@@ -129,9 +131,9 @@ int main(int argc, char *argv[]) {
       }
     } catch (std::invalid_argument& e) {
       std::cerr << "Argumento invalido (el valor inicial '"
-                << argv[2] << " o el valor final '" << argv[3]
-                << "' no ha podido convertirse a entero). Motivo: "
-                << e.what() << std::endl;
+          << argv[2] << " o el valor final '" << argv[3]
+          << "' no ha podido convertirse a entero). Motivo: "
+          << e.what() << std::endl;
       return 3;
     } catch (std::out_of_range& e) {
         std::cerr << "Fuera de rango" << std::endl;
@@ -157,13 +159,13 @@ int main(int argc, char *argv[]) {
     bin = vectorBoolABinarioString(vectorBool, inicialv, finalv);
   } catch (std::out_of_range& e) {
     std::cerr << "Fuera de rango (el valor inicial '" << inicialv
-              << "' o el valor final '" << finalv
-              << "' se encuentran fuera de rango del vector). Motivo: "
-              << e.what() << std::endl;
+        << "' o el valor final '" << finalv
+        << "' se encuentran fuera de rango del vector). Motivo: "
+        << e.what() << std::endl;
     return 6;
   } catch (std::invalid_argument& e) {
     std::cerr << "Argumento invalido. " << "Motivo: " << e.what()
-              << std::endl;
+        << std::endl;
     return 7;
   }
 

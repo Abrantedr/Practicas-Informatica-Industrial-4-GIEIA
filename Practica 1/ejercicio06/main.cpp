@@ -15,8 +15,10 @@
  * parámetro de salida.
  *
  * @param vector Vector de enteros a recorrer.
- * @param mayores Vector que almacena los elementos mayores que el pivote.
- * @param menores Vector que almacena los elementos menores que el pivote.
+ * @param mayores Vector que almacena los elementos
+ * mayores que el pivote.
+ * @param menores Vector que almacena los elementos
+ * menores que el pivote.
  * @param pivote Pivote entero de referencia.
  *
  * @return El número de elementos que son iguales al pivote.
@@ -26,7 +28,6 @@ int mayoresMenoresIguales(const std::vector<int>& vector,
                           std::vector<int>& menores,
                           int pivote) {
   int iguales = 0;
-
   for (int elemento: vector) {
     if (elemento > pivote)
       mayores.push_back(elemento);
@@ -46,7 +47,9 @@ int mayoresMenoresIguales(const std::vector<int>& vector,
  *
  * @return Verdadero si contiene el sufijo, falso si no lo contiene.
  */
-bool tieneSufijo(const std::string &archivo, const std::string &sufijo) {
+bool tieneSufijo(const std::string& archivo,
+                 const std::string& sufijo) {
+
   return archivo.size() >= sufijo.size() &&
   archivo.compare(archivo.size() - sufijo.size(),
                   sufijo.size(), sufijo) == 0;
@@ -61,7 +64,7 @@ bool tieneSufijo(const std::string &archivo, const std::string &sufijo) {
  * @return No devuelve nada. El vector es pasado por referencia, por lo
  * que es modificado en la llamada a esta función.
  */
-void volcarVector(const std::string &archivo, std::vector<int> &vector) {
+void volcarVector(const std::string& archivo, std::vector<int>& vector) {
   std::ofstream outputFile(archivo);
   bool fine = true;
 
@@ -69,8 +72,8 @@ void volcarVector(const std::string &archivo, std::vector<int> &vector) {
     for (int elemento: vector) {
       outputFile << elemento << std::endl;
       if (!outputFile.good()) {
-        std::cerr << "Se ha producido un problema al escribir el archivo"
-            << std::endl;
+        std::cerr << "Se ha producido un problema "
+                     "al escribir el archivo" << std::endl;
         fine = false;
         break;
       }
@@ -79,7 +82,8 @@ void volcarVector(const std::string &archivo, std::vector<int> &vector) {
       std::cerr << "El vector se ha volcado correctamente al archivo "
           << archivo << std::endl;
   } else {
-    std::cerr << "No se pudo abrir el archivo para escritura" << std::endl;
+    std::cerr << "No se pudo abrir el archivo para escritura"
+        << std::endl;
   }
 }
 
@@ -87,7 +91,8 @@ void volcarVector(const std::string &archivo, std::vector<int> &vector) {
 int main(int argc, char *argv[]) {
 
   if (argc < 2) {
-    std::cerr << "No se ha especificado el nombre del archivo" << std::endl;
+    std::cerr << "No se ha especificado el nombre del archivo"
+        << std::endl;
     return 1;
   }
 
@@ -101,7 +106,8 @@ int main(int argc, char *argv[]) {
   std::ifstream file(archivo);
 
   if (!file.good()) {
-    std::cerr << "El archivo no ha podido abrirse o no existe" << std::endl;
+    std::cerr << "El archivo no ha podido abrirse o no existe"
+        << std::endl;
     return 2;
   }
 

@@ -15,8 +15,10 @@
  * parámetro de salida.
  *
  * @param vector Vector de enteros a recorrer.
- * @param mayores Vector que almacena los elementos mayores que el pivote.
- * @param menores Vector que almacena los elementos menores que el pivote.
+ * @param mayores Vector que almacena los elementos
+ * mayores que el pivote.
+ * @param menores Vector que almacena los elementos
+ * menores que el pivote.
  * @param pivote Pivote entero de referencia.
  *
  * @return El número de elementos que son iguales al pivote.
@@ -26,7 +28,6 @@ int mayoresMenoresIguales(const std::vector<int>& vector,
                           std::vector<int>& menores,
                           int pivote) {
   int iguales = 0;
-
   for (int elemento: vector) {
     if (elemento > pivote)
       mayores.push_back(elemento);
@@ -46,7 +47,9 @@ int mayoresMenoresIguales(const std::vector<int>& vector,
  *
  * @return Verdadero si contiene el sufijo, falso si no lo contiene.
  */
-bool tieneSufijo(const std::string &archivo, const std::string &sufijo) {
+bool tieneSufijo(const std::string& archivo,
+                 const std::string& sufijo) {
+
   return archivo.size() >= sufijo.size() &&
   archivo.compare(archivo.size() - sufijo.size(),
                   sufijo.size(), sufijo) == 0;
@@ -56,7 +59,8 @@ bool tieneSufijo(const std::string &archivo, const std::string &sufijo) {
 int main(int argc, char *argv[]) {
 
   if (argc < 2) {
-    std::cerr << "No se ha especificado el nombre del archivo" << std::endl;
+    std::cerr << "No se ha especificado el nombre del archivo"
+        << std::endl;
     return 1;
   }
 
@@ -70,7 +74,8 @@ int main(int argc, char *argv[]) {
   std::ifstream file(archivo);
 
   if (!file.good()) {
-    std::cerr << "El archivo no ha podido abrirse o no existe" << std::endl;
+    std::cerr << "El archivo no ha podido abrirse o no existe"
+        << std::endl;
     return 2;
   }
 
@@ -107,7 +112,8 @@ int main(int argc, char *argv[]) {
   std::cout << "Mayores: " << std::endl;
 
   if (mayores.empty()) {
-    std::cerr << "No existe ningun elemento mayor que " << pivote << std::endl;
+    std::cerr << "No existe ningun elemento mayor que " << pivote
+        << std::endl;
   } else {
     for (int elemento: mayores)
       std::cout << elemento << std::endl;
@@ -116,7 +122,8 @@ int main(int argc, char *argv[]) {
   std::cout << "Menores: " << std::endl;
 
   if (menores.empty()) {
-    std::cerr << "No existe ningun elemento menor que " << pivote << std::endl;
+    std::cerr << "No existe ningun elemento menor que " << pivote
+        << std::endl;
   } else {
     for (int elemento: menores)
       std::cout << elemento << std::endl;

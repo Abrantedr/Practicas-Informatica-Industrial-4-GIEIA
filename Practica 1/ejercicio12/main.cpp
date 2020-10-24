@@ -10,7 +10,7 @@
 
 
 // Muestra un vector por std::cerr, del tipo que sea
-template <class T> void muestraVector(const std::vector<T> &vector) {
+template <class T> void muestraVector(const std::vector<T>& vector) {
   std::cerr << "El vector contiene: ";
   for (const T& k: vector) {
     std::cerr << k << ", ";
@@ -26,14 +26,16 @@ template <class T> void muestraVector(const std::vector<T> &vector) {
 *
 * @return Verdadero si contiene el sufijo, falso si no lo contiene.
 */
-bool tieneSufijo(const std::string &archivo, const std::string &sufijo) {
+bool tieneSufijo(const std::string& archivo,
+                 const std::string& sufijo) {
+
   return archivo.size() >= sufijo.size() &&
          archivo.compare(archivo.size() - sufijo.size(),
                          sufijo.size(), sufijo) == 0;
 }
 
 // Ordena un vector de menor a mayor por el método de la burbuja
-void metodoBurbuja(std::vector<double> &vector) {
+void metodoBurbuja(std::vector<double>& vector) {
 
   for (unsigned i = 0; i < vector.size(); ++i) {
     for (unsigned j = vector.size() - 1; j > i; --j) {
@@ -51,7 +53,7 @@ int main(int argc, char *argv[]) {
 
   if (argc < 2) {
     std::cerr << "No se ha especificado el nombre del archivo"
-              << std::endl;
+        << std::endl;
     return 1;
   }
 
@@ -66,7 +68,7 @@ int main(int argc, char *argv[]) {
 
   if (!file.good()) {
     std::cerr << "El archivo no ha podido abrirse o no existe"
-              << std::endl;
+        << std::endl;
     return 2;
   }
 
@@ -86,7 +88,8 @@ int main(int argc, char *argv[]) {
 
   // Mostramos el vector por std::cout
   for (double &i: vector) {
-    std::cout << std::fixed << std::setprecision(4) << std::setw(7) << i << std::endl;
+    std::cout << std::fixed << std::setprecision(4)
+        << std::setw(7) << i << std::endl;
   }
 
 
