@@ -103,6 +103,7 @@ int main(int argc, char* argv[]) {
     std::cerr << "El pivote no puede ser negativo." << std::endl;
     return 3;
   }
+  std::cerr << "El pivote vale '" << pivote << "'." << std::endl;
 
   std::ifstream file(archivo);
 
