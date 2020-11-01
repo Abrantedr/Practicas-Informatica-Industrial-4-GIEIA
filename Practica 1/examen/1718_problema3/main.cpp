@@ -1,4 +1,4 @@
-// Autor: Rubén Abrante Delgado. Fecha: 31/10/2020
+// Autor: Rubén Abrante Delgado. Fecha: 01/11/2020
 
 #include <iostream>
 #include <string>
@@ -17,14 +17,14 @@ int binarioStringAEntero(std::string binario) {
   return entero;
 }
 
-std::vector<int> menoresQuePivote(
+std::vector<int> mayoresQuePivote(
     const std::vector<std::string>& vector,
     int pivote) {
 
   std::vector<int> vectorInt;
   for (const std::string& binario: vector) {
     int valor = binarioStringAEntero(binario);
-    if (valor < pivote)
+    if (valor > pivote)
       vectorInt.push_back(valor);
   }
   return vectorInt;
@@ -48,8 +48,8 @@ bool tieneSufijo(const std::string& archivo,
                  const std::string& sufijo) {
 
   return archivo.size() >= sufijo.size() &&
-      archivo.compare(archivo.size() - sufijo.size(),
-                  sufijo.size(), sufijo) == 0;
+         archivo.compare(archivo.size() - sufijo.size(),
+                         sufijo.size(), sufijo) == 0;
 }
 
 // Indica si un archivo tiene un prefijo determinado
@@ -57,14 +57,14 @@ bool tienePrefijo(const std::string& archivo,
                   const std::string& prefijo) {
 
   return archivo.size() >= prefijo.size() &&
-      archivo.compare(0, prefijo.size(), prefijo) == 0;
+         archivo.compare(0, prefijo.size(), prefijo) == 0;
 }
 
 int main(int argc, char* argv[]) {
 
   if (argc < 2) {
     std::cerr << "No se ha especificado el nombre del archivo"
-        << std::endl;
+              << std::endl;
     return 1;
   }
 
@@ -74,18 +74,18 @@ int main(int argc, char* argv[]) {
 
   if (!tieneSufijo(archivo, extension)) {
     std::cerr << "El archivo no tiene extension '" << extension
-        << std::endl;
+              << std::endl;
     archivo = archivo + extension;
   }
 
   if (!tienePrefijo(archivo, prefijo)) {
     std::cerr << "El archivo no tiene prefijo '" << prefijo << "'."
-        << std::endl;
+              << std::endl;
     archivo = prefijo + archivo;
   }
 
   std::cerr << "El archivo final se llama '" << archivo << "'."
-      << std::endl;
+            << std::endl;
 
   int pivote = 32;
   if (argc >= 3) {
@@ -93,7 +93,7 @@ int main(int argc, char* argv[]) {
       pivote = std::stoi(argv[2]);
     } catch (std::invalid_argument& e) {
       std::cerr << "El pivote no ha podido convertirse a entero."
-          << " Motivo: " << e.what() << std::endl;
+                << " Motivo: " << e.what() << std::endl;
       return 2;
     }
   }
@@ -109,7 +109,7 @@ int main(int argc, char* argv[]) {
   std::ifstream file(archivo);
   if (file.fail()) {
     std::cerr << "Se ha producido un error al abrir el archivo"
-        << std::endl;
+              << std::endl;
     return 4;
   }
 
@@ -125,13 +125,13 @@ int main(int argc, char* argv[]) {
   muestraVector<std::string>(vector);
 
   // Llamamos a nuestra función
-  std::vector<int> resultado = menoresQuePivote(vector, pivote);
+  std::vector<int> resultado = mayoresQuePivote(vector, pivote);
   muestraVector<int>(resultado);
 
   // Mostramos el resultado por std::cout
   if (resultado.empty()) {
-    std::cout << "No hay ningun valor menor que el pivote '"
-        << pivote << "'." << std::endl;
+    std::cout << "No hay ningun valor mayor que el pivote '"
+              << pivote << "'." << std::endl;
     return 5;
   }
   for (int valor: resultado) {
