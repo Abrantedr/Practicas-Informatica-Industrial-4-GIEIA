@@ -1,3 +1,5 @@
+// Autor: Rubén Abrante Delgado. Fecha: 01/11/2020
+
 #include <iostream>
 #include <string>
 #include <vector>
