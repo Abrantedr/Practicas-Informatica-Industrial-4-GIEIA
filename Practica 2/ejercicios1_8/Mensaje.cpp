@@ -4,16 +4,13 @@
 
 #include "Mensaje.hpp"
 #include <iostream>
-#include <sstream>
 #include <iomanip>
 
 Mensaje::Mensaje() = default;
 
-Mensaje::Mensaje(std::vector<uint8_t> bytes) : _bytes(bytes) {
-  // Pasa por valor (std::move() no es requerido)
-}
+Mensaje::Mensaje(std::vector<uint8_t> bytes) : _bytes(bytes) {}
 
-std::string Mensaje::toString() {
+std::string Mensaje::toString() const {
   std::ostringstream os;
   os << "[(" << _bytes.size() << ") ";
   for (unsigned _byte : _bytes) {
@@ -24,58 +21,72 @@ std::string Mensaje::toString() {
   return os.str();
 }
 
-unsigned Mensaje::size() {
+unsigned Mensaje::size() const {
   return _bytes.size();
 }
 
-uint8_t Mensaje::getByteAt(unsigned ind) {
-  // Aunque ind sea negativo o haga overflow a unsigned int
-  // siempre es capturado como std::out_of_range
-  uint8_t byteAt;
-  try {
-    byteAt = _bytes.at(ind);
-  } catch (std::out_of_range& e) {
-    std::cerr << "Indice fuera de rango. Motivo: " << e.what()
-        << std::endl;
-  }
-  return byteAt;
+uint8_t Mensaje::getByteAt(unsigned ind) const {
+  return _bytes.at(ind);
 }
 
 void Mensaje::setByteAt(unsigned ind, uint8_t dato) {
-  // Nada previene al dato hacer underflow u overflow a uint8_t
-  try {
-    _bytes.at(ind) = dato;
-  } catch (std::out_of_range& e) {
-    std::cerr << "Indice fuera de rango. Motivo: " << e.what()
-        << std::endl;
-  }
+  _bytes.at(ind) = dato;
 }
 
 void Mensaje::pushByte_back(uint8_t dato) {
-  // Nada previene al dato hacer underflow u overflow a uint8_t
   _bytes.push_back(dato);
 }
 
 bool Mensaje::crcOK() {
-  return false;
+  if (crc16(_bytes)) // Si el crc es distinto de cero
+    return false; // No contiene el crc
+  else
+    return true;
 }
 
 void Mensaje::aniadeCRC() {
-
+  if (!crcOK()) { // Si no tiene crc
+    uint16_t crc = crc16(_bytes);
+    pushWord_back(crc);
+  }
 }
 
-uint16_t Mensaje::getWordAt(unsigned ind) {
+uint16_t Mensaje::getWordAt(unsigned ind) const {
   return (uint16_t)getByteAt(ind) << 8 | getByteAt(ind + 1);
 }
 
 void Mensaje::setWordAt(unsigned ind, uint16_t dato) {
-  // Big-Endian
   setByteAt(ind, dato >> 8); // msb
   setByteAt(ind + 1, dato & 0xFF); // lsb
 }
 
 void Mensaje::pushWord_back(uint16_t dato) {
-  // Big-Endian
   pushByte_back(dato >> 8); // msb
   pushByte_back(dato & 0xFF); // lsb
+}
+
+uint16_t Mensaje::crc16(std::vector<uint8_t> mensaje, unsigned len) {
+  uint16_t crc = 0xFFFF;
+
+  for(unsigned ba = 0; ba < len; ba++) {
+    crc ^= mensaje.at(ba);
+    for(unsigned i = 0; i < 8; i++) {
+      if(crc & 0x0001) {
+        crc = (crc >> 1) ^ 0xA001;
+      } else {
+        crc >>= 1;
+      }
+    }
+  }
+  // pasamos a big-endian
+  return (crc >> 8) | ((crc & 0xff) << 8);
+}
+
+uint16_t Mensaje::crc16(std::vector<uint8_t> mensaje) {
+  return crc16(mensaje, mensaje.size());
+}
+
+std::ostream& operator<<(std::ostream& os, Mensaje& mensaje) {
+  os << mensaje.toString();
+  return os;
 }
