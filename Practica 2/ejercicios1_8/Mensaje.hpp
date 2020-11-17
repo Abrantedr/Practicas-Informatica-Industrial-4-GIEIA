@@ -9,6 +9,7 @@
 #include <cstdint>
 #include <string>
 
+
 // Representa un mensaje Modbus como una secuencia de bytes (uint8_t)
 class Mensaje {
 
