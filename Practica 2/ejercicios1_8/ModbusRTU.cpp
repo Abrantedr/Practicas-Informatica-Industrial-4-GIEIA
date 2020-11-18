@@ -2,14 +2,6 @@
 // Created by Rubén Abrante Delgado on 17/11/2020.
 //
 
-#ifdef __unix__
-...
-#elif defined(_WIN64) || defined(WIN64)
-
-#define OS_Windows
-
-#endif
-
 #include <iostream>
 #include <ctime>
 
@@ -37,13 +29,11 @@ ModbusRTU::ModbusRTU(uint8_t id) : _id(id), _DO(20), _AO(10), _DI(20), _AI(20) {
   std::cerr << "Se ha creado un ModbusRTU con ID: " << (int)_id
       << std::endl;
 
-  /*
   muestraRegistro<uint16_t>(_AO, "[AO]: ");
   muestraRegistro<bool>(_DO, "[DO]: ");
   muestraRegistro<uint16_t>(_AI, "[AI]: ");
   muestraRegistro<bool>(_DI, "[DI]: ");
   std::cerr << std::endl;
-  */
 }
 
 
@@ -82,12 +72,10 @@ Mensaje ModbusRTU::peticion(Mensaje& recibido) {
     actualizaAI();
   }
 
-  /*
   std::cerr << "Actualizando [AI]" << std::endl;
   muestraRegistro<uint16_t>(_AI, "[AI]: ");
   muestraRegistro<bool>(_DI, "[DI]: ");
   std::cerr << std::endl;
-  */
 
   // Según la función, validamos el mensaje
   if (!esValido(recibido, funcion))
@@ -125,7 +113,8 @@ Mensaje ModbusRTU::peticion(Mensaje& recibido) {
       std::cerr << "Funcion no implementada" << std::endl;
       respuesta = generaError(recibido, 0x01);
   }
-  //std::cerr << std::endl;
+  std::cerr << std::endl;
+
   return respuesta;
 }
 
@@ -367,19 +356,11 @@ void ModbusRTU::actualizaAI() {
   _AI.at(ra++) = now->tm_sec;
 
   // Datos proceso
-  #ifdef OS_Windows
-  /* Código para sistemas Windows 64 bits */
-  _AI.at(ra++) = 0; //Placeholders
-  _AI.at(ra++) = 0;
-  _AI.at(ra++) = 0;
-  _AI.at(ra++) = 0;
-  #else
   /* Código para sistemas GNU/Linux */
   _AI.at(ra++) = getuid();
   _AI.at(ra++) = getgid();
   _AI.at(ra++) = getpid();
   _AI.at(ra++) = getppid();
-  #endif
 
   for (std::size_t i = 0; i < 15; ++i) {
     _DI.at(i) = _AI.at(i) & 1; // 0 si es par, 1 si es impar
