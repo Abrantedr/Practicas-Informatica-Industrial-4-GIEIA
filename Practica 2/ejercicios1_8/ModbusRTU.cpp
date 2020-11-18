@@ -37,7 +37,7 @@ bool ModbusRTU::esValido(Mensaje& recibido, uint8_t funcion) {
           << std::endl;
     }
   }
-  return false;
+  return true;
 }
 
 
