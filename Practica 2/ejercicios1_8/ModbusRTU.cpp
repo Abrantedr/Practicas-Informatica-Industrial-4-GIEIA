@@ -37,12 +37,13 @@ ModbusRTU::ModbusRTU(uint8_t id) : _id(id), _DO(20), _AO(10), _DI(20), _AI(20) {
   std::cerr << "Se ha creado un ModbusRTU con ID: " << (int)_id
       << std::endl;
 
+  /*
   muestraRegistro<uint16_t>(_AO, "[AO]: ");
   muestraRegistro<bool>(_DO, "[DO]: ");
   muestraRegistro<uint16_t>(_AI, "[AI]: ");
   muestraRegistro<bool>(_DI, "[DI]: ");
   std::cerr << std::endl;
-
+  */
 }
 
 
@@ -81,10 +82,12 @@ Mensaje ModbusRTU::peticion(Mensaje& recibido) {
     actualizaAI();
   }
 
+  /*
   std::cerr << "Actualizando [AI]" << std::endl;
   muestraRegistro<uint16_t>(_AI, "[AI]: ");
   muestraRegistro<bool>(_DI, "[DI]: ");
   std::cerr << std::endl;
+  */
 
   // Según la función, validamos el mensaje
   if (!esValido(recibido, funcion))
@@ -122,7 +125,7 @@ Mensaje ModbusRTU::peticion(Mensaje& recibido) {
       std::cerr << "Funcion no implementada" << std::endl;
       respuesta = generaError(recibido, 0x01);
   }
-  std::cerr << std::endl;
+  //std::cerr << std::endl;
   return respuesta;
 }
 
@@ -366,7 +369,6 @@ void ModbusRTU::actualizaAI() {
   // Datos proceso
   #ifdef OS_Windows
   /* Código para sistemas Windows 64 bits */
-  //TODO: Implementar la parte de código para sistemas Windows64
   _AI.at(ra++) = 0; //Placeholders
   _AI.at(ra++) = 0;
   _AI.at(ra++) = 0;
