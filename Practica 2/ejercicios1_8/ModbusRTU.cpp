@@ -348,6 +348,7 @@ Mensaje ModbusRTU::atiende16(Mensaje& recibido) {
   return respuesta;
 }
 
+
 void ModbusRTU::actualizaAI() {
   unsigned ra = 0;
 
@@ -367,11 +368,10 @@ void ModbusRTU::actualizaAI() {
   // Datos proceso
   #ifdef OS_Windows
   /* Código para sistemas Windows 64 bits */
-  //TODO: Implementar la parte de código para sistemas Windows64
-  _AI.at(ra++) = 0; //Placeholders
-  _AI.at(ra++) = 0;
-  _AI.at(ra++) = 0;
-  _AI.at(ra++) = 0;
+  _AI.at(ra++) = 0; //Placeholder
+  _AI.at(ra++) = 0; //Placeholder
+  _AI.at(ra++) = 0; //Placeholder
+  _AI.at(ra++) = 0; //Placeholder
   #else
   /* Código para sistemas GNU/Linux */
   _AI.at(ra++) = getuid();
