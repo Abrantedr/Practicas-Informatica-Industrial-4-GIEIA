@@ -74,7 +74,7 @@ template <class T> bool ModbusRTU::dentroDeRango(const std::vector<T>& registro,
     uint16_t offset, uint16_t numPos) const {
   return (offset >= 0) && (offset < registro.size())
       && ((offset + numPos) >= offset)
-      && ((offset + numPos) < registro.size());
+      && ((offset + numPos) <= registro.size());
 }
 
 
