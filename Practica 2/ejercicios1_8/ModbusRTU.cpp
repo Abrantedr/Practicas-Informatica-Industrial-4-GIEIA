@@ -2,6 +2,16 @@
 // Created by Rubén Abrante Delgado on 17/11/2020.
 //
 
+#ifdef __unix__
+
+#include <unistd.h>
+
+#elif defined(_WIN64) || defined(WIN64)
+
+#define OS_Windows
+
+#endif
+
 #include <iostream>
 #include <ctime>
 
@@ -114,7 +124,6 @@ Mensaje ModbusRTU::peticion(Mensaje& recibido) {
       respuesta = generaError(recibido, 0x01);
   }
   std::cerr << std::endl;
-
   return respuesta;
 }
 
@@ -356,11 +365,20 @@ void ModbusRTU::actualizaAI() {
   _AI.at(ra++) = now->tm_sec;
 
   // Datos proceso
+  #ifdef OS_Windows
+  /* Código para sistemas Windows 64 bits */
+  //TODO: Implementar la parte de código para sistemas Windows64
+  _AI.at(ra++) = 0; //Placeholders
+  _AI.at(ra++) = 0;
+  _AI.at(ra++) = 0;
+  _AI.at(ra++) = 0;
+  #else
   /* Código para sistemas GNU/Linux */
   _AI.at(ra++) = getuid();
   _AI.at(ra++) = getgid();
   _AI.at(ra++) = getpid();
   _AI.at(ra++) = getppid();
+  #endif
 
   for (std::size_t i = 0; i < 15; ++i) {
     _DI.at(i) = _AI.at(i) & 1; // 0 si es par, 1 si es impar
