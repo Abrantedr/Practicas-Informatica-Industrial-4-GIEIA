@@ -35,6 +35,7 @@ bool ModbusRTU::esValido(Mensaje& recibido, uint8_t funcion) {
     } catch (std::out_of_range& e) {
       std::cerr << "No se ha podido acceder al numero de datos"
           << std::endl;
+      return false;
     }
   }
   return true;
@@ -211,6 +212,9 @@ Mensaje ModbusRTU::atiende05(Mensaje& recibido) {
     _DO.at(offset) = false;
     std::cerr << "Ponemos a 0 la DO[" << offset << "]: "
         << _DO.at(offset) << std::endl;
+  } else {
+    // El valor es inválido
+    return generaError(recibido, 0x03);
   }
   return recibido;
 }
