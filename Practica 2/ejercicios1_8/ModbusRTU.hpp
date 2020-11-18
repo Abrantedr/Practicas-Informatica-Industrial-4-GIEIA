@@ -21,6 +21,12 @@ private:
   // Lectura de salidas analógicas
   Mensaje atiende03(Mensaje& recibido);
 
+  // Fuerza una única salida analógica
+  Mensaje atiende06(Mensaje& recibido);
+
+  // Fuerza múltiples salidas analógicas
+  Mensaje atiende16(Mensaje& recibido);
+
   // Lectura de salidas digitales
   Mensaje atiende01(Mensaje& recibido);
 
@@ -29,6 +35,14 @@ private:
 
   // Fuerza múltiples salidas digitales
   Mensaje atiende15(Mensaje& recibido);
+
+  // Comprueba si el acceso a un registro está fuera de rango
+  template <class T> bool dentroDeRango(const std::vector<T>& registro,
+      uint16_t offset, uint16_t numPos=0) const;
+
+  // Genera un mensaje de error dado un mensaje recibido y un código de
+  // error
+  static Mensaje generaError(Mensaje& recibido, uint8_t errorCode);
 
 public:
   // Constructor donde se especifica el identificador del dispositivo.
