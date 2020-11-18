@@ -22,7 +22,22 @@ ModbusRTU::ModbusRTU(uint8_t id) : _id(id), _DO(20), _AO(10) {
 
   std::cerr << "Se ha creado un ModbusRTU con ID: " << (int)_id
       << std::endl;
+}
 
+
+bool ModbusRTU::esValido(Mensaje& recibido, uint8_t funcion) {
+  if (funcion == 1 || funcion == 3 || funcion == 5 || funcion == 6) {
+    return (recibido.size() == 8);
+  } else if (funcion == 15 || funcion == 16) {
+    try {
+      uint16_t numDatos = recibido.getByteAt(6);
+      return (recibido.size() == 9 + numDatos);
+    } catch (std::out_of_range& e) {
+      std::cerr << "No se ha podido acceder al numero de datos"
+          << std::endl;
+    }
+  }
+  return false;
 }
 
 
@@ -31,8 +46,17 @@ Mensaje ModbusRTU::peticion(Mensaje& recibido) {
 
   std::cerr << "Recibido mensaje " << recibido << std::endl;
 
-  uint8_t id = recibido.getByteAt(0);
-  uint8_t funcion = recibido.getByteAt(1);
+  uint8_t id = 0;
+  uint8_t funcion = 0;
+  if (recibido.size() >= 2) {
+    // El mensaje tiene al menos un id y una función
+    id = recibido.getByteAt(0);
+    funcion = recibido.getByteAt(1);
+  }
+
+  // Según la función, validamos el mensaje
+  if (!esValido(recibido, funcion))
+    return generaError(recibido, 0x03);
 
   std::cerr << "El mensaje es para " << (int)id << " y la funcion es "
       << (int)funcion << std::endl;

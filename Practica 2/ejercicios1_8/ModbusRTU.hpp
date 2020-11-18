@@ -14,7 +14,7 @@
 class ModbusRTU {
 
 private:
-  uint8_t _id;
+  uint8_t _id; // Dirección del dispositivo ModbusRTU
   std::vector<bool> _DO; // Registro de salidas digitales
   std::vector<uint16_t> _AO; // Registro de salidas analógicas
 
@@ -43,6 +43,9 @@ private:
   // Genera un mensaje de error dado un mensaje recibido y un código de
   // error
   static Mensaje generaError(Mensaje& recibido, uint8_t errorCode);
+
+  // Comprueba si un mensaje es válido
+  static bool esValido(Mensaje& recibido, uint8_t funcion);
 
 public:
   // Constructor donde se especifica el identificador del dispositivo.
