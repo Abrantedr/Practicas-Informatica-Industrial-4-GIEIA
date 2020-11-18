@@ -17,6 +17,12 @@ private:
   uint8_t _id; // Dirección del dispositivo ModbusRTU
   std::vector<bool> _DO; // Registro de salidas digitales
   std::vector<uint16_t> _AO; // Registro de salidas analógicas
+  std::vector<bool> _DI; // Registro de entradas digitales
+  std::vector<uint16_t> _AI; // Registro de entradas analógicas
+
+  unsigned _petRecibidas = 0;
+  unsigned _byteRecibidos = 0;
+  unsigned _byteEnviados = 0;
 
   // Lectura de salidas analógicas
   Mensaje atiende03(Mensaje& recibido);
@@ -42,10 +48,18 @@ private:
 
   // Genera un mensaje de error dado un mensaje recibido y un código de
   // error
-  static Mensaje generaError(Mensaje& recibido, uint8_t errorCode);
+  Mensaje generaError(Mensaje& recibido, uint8_t errorCode);
 
   // Comprueba si un mensaje es válido
   static bool esValido(Mensaje& recibido, uint8_t funcion);
+
+  // Actualiza los valores de entrada analógicas según varios parámetros
+  void actualizaAI();
+
+  // Muestra el valor de un registro por std::cerr (debugging)
+  template <class T> void muestraRegistro(
+      const std::vector<T>& registro,
+      const std::string& identificador) const;
 
 public:
   // Constructor donde se especifica el identificador del dispositivo.

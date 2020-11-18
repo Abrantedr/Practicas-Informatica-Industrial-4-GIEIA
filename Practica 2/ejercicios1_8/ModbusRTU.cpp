@@ -2,12 +2,21 @@
 // Created by Rubén Abrante Delgado on 17/11/2020.
 //
 
+#ifdef __unix__
+...
+#elif defined(_WIN64) || defined(WIN64)
+
+#define OS_Windows
+
+#endif
+
 #include <iostream>
+#include <ctime>
 
 #include "ModbusRTU.hpp"
 
 
-ModbusRTU::ModbusRTU(uint8_t id) : _id(id), _DO(20), _AO(10) {
+ModbusRTU::ModbusRTU(uint8_t id) : _id(id), _DO(20), _AO(10), _DI(20), _AI(20) {
   // Las primeros 20 salidas digitales con un valor inicial de 0 en las
   // posiciones pares y de 1 las posiciones impares.
   for (std::size_t i = 0; i < _DO.size(); i += 2) {
@@ -20,8 +29,20 @@ ModbusRTU::ModbusRTU(uint8_t id) : _id(id), _DO(20), _AO(10) {
     _AO.at(i) = i * 4;
   }
 
+  for (std::size_t i = 13; i < _AI.size(); ++i) {
+    if (i & 1) // Si es impar
+      _AI.at(i) = 1111;
+  }
+
   std::cerr << "Se ha creado un ModbusRTU con ID: " << (int)_id
       << std::endl;
+
+  muestraRegistro<uint16_t>(_AO, "[AO]: ");
+  muestraRegistro<bool>(_DO, "[DO]: ");
+  muestraRegistro<uint16_t>(_AI, "[AI]: ");
+  muestraRegistro<bool>(_DI, "[DI]: ");
+  std::cerr << std::endl;
+
 }
 
 
@@ -53,7 +74,17 @@ Mensaje ModbusRTU::peticion(Mensaje& recibido) {
     // El mensaje tiene al menos un id y una función
     id = recibido.getByteAt(0);
     funcion = recibido.getByteAt(1);
+    // Actualizamos los atributos del ModbusRTU
+    _petRecibidas++;
+    if (recibido.crcOK())
+      _byteRecibidos += recibido.size() - 2;
+    actualizaAI();
   }
+
+  std::cerr << "Actualizando [AI]" << std::endl;
+  muestraRegistro<uint16_t>(_AI, "[AI]: ");
+  muestraRegistro<bool>(_DI, "[DI]: ");
+  std::cerr << std::endl;
 
   // Según la función, validamos el mensaje
   if (!esValido(recibido, funcion))
@@ -91,6 +122,7 @@ Mensaje ModbusRTU::peticion(Mensaje& recibido) {
       std::cerr << "Funcion no implementada" << std::endl;
       respuesta = generaError(recibido, 0x01);
   }
+  std::cerr << std::endl;
   return respuesta;
 }
 
@@ -114,6 +146,8 @@ Mensaje ModbusRTU::generaError(Mensaje& recibido, uint8_t errorCode) {
   respuesta.aniadeCRC();
 
   std::cerr << "Mensaje de error: " << respuesta << std::endl;
+  _byteEnviados += respuesta.size() - 2; // Excluye el CRC
+
   return respuesta;
 }
 
@@ -143,6 +177,7 @@ Mensaje ModbusRTU::atiende03(Mensaje& recibido) {
   respuesta.aniadeCRC(); // CRC
 
   std::cerr << "Respuesta: " << respuesta << std::endl;
+  _byteEnviados += respuesta.size() - 2; // Excluye el CRC
   return respuesta;
 }
 
@@ -186,6 +221,7 @@ Mensaje ModbusRTU::atiende01(Mensaje& recibido) {
   respuesta.aniadeCRC(); // CRC
 
   std::cerr << "Respuesta: " << respuesta << std::endl;
+  _byteEnviados += respuesta.size() - 2; // Excluye el CRC
   return respuesta;
 }
 
@@ -216,6 +252,7 @@ Mensaje ModbusRTU::atiende05(Mensaje& recibido) {
     // El valor es inválido
     return generaError(recibido, 0x03);
   }
+  _byteEnviados += recibido.size() - 2; // Excluye el CRC
   return recibido;
 }
 
@@ -254,6 +291,7 @@ Mensaje ModbusRTU::atiende15(Mensaje& recibido) {
   respuesta.aniadeCRC(); // CRC
 
   std::cerr << "Respuesta: " << respuesta << std::endl;
+  _byteEnviados += respuesta.size() - 2; // Excluye el CRC
   return respuesta;
 }
 
@@ -273,6 +311,7 @@ Mensaje ModbusRTU::atiende06(Mensaje& recibido) {
       << "]: " << _AO.at(offset) << std::endl;
   _AO.at(offset) = valor;
 
+  _byteEnviados += recibido.size() - 2; // Excluye el CRC
   return recibido;
 }
 
@@ -304,5 +343,55 @@ Mensaje ModbusRTU::atiende16(Mensaje& recibido) {
   respuesta.aniadeCRC(); // CRC
 
   std::cerr << "Respuesta: " << respuesta << std::endl;
+  _byteEnviados += respuesta.size() - 2; // Excluye el CRC
   return respuesta;
+}
+
+void ModbusRTU::actualizaAI() {
+  unsigned ra = 0;
+
+  _AI.at(ra++) = _petRecibidas;
+  _AI.at(ra++) = _byteRecibidos;
+  _AI.at(ra++) = _byteEnviados;
+
+  std::time_t now_time = std::time(nullptr);
+  std::tm* now = std::localtime(&now_time);
+  _AI.at(ra++) = now->tm_year + 1900;
+  _AI.at(ra++) = now->tm_mon + 1;
+  _AI.at(ra++) = now->tm_mday;
+  _AI.at(ra++) = now->tm_hour;
+  _AI.at(ra++) = now->tm_min;
+  _AI.at(ra++) = now->tm_sec;
+
+  // Datos proceso
+  #ifdef OS_Windows
+  /* Código para sistemas Windows 64 bits */
+  //TODO: Implementar la parte de código para sistemas Windows64
+  _AI.at(ra++) = 0; //Placeholders
+  _AI.at(ra++) = 0;
+  _AI.at(ra++) = 0;
+  _AI.at(ra++) = 0;
+  #else
+  /* Código para sistemas GNU/Linux */
+  _AI.at(ra++) = getuid();
+  _AI.at(ra++) = getgid();
+  _AI.at(ra++) = getpid();
+  _AI.at(ra++) = getppid();
+  #endif
+
+  for (std::size_t i = 0; i < 15; ++i) {
+    _DI.at(i) = _AI.at(i) & 1; // 0 si es par, 1 si es impar
+  }
+}
+
+
+template <class T> void ModbusRTU::muestraRegistro(
+    const std::vector<T>& registro,
+    const std::string& identificador) const {
+
+  std::cerr << identificador;
+  for (const T& k: registro) {
+    std::cerr << k << ", ";
+  }
+  std::cerr << std::endl;
 }
