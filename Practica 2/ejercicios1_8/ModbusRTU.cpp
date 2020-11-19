@@ -449,7 +449,7 @@ Mensaje ModbusRTU::atiende04(Mensaje& recibido) {
   std::cerr << "Entramos en metodo atiende04 con mensaje " << recibido
             << std::endl;
 
-  uint16_t offset = recibido.getWordAt(2);
+  uint16_t offset = recibido.getWordAt(2) - 99; // A partir de 3100
   uint16_t numPos = recibido.getWordAt(4);
 
   if (!dentroDeRango<uint16_t>(_AI, offset, numPos))
@@ -460,7 +460,7 @@ Mensaje ModbusRTU::atiende04(Mensaje& recibido) {
   respuesta.pushByte_back(numPos * 2); // Número de bytes
 
   for (std::size_t i = offset; i < (offset + numPos); ++i) { // Datos
-    std::cerr << "Accediendo AO[" << i << "]: " << _AI.at(i)
+    std::cerr << "Accediendo AI[" << i << "]: " << _AI.at(i)
               << std::endl;
     respuesta.pushWord_back(_AI.at(i));
   }
