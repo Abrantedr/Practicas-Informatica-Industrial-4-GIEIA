@@ -29,7 +29,7 @@ ModbusRTU::ModbusRTU(uint8_t id) : _id(id), _DO(20), _AO(10), _DI(20), _AI(20) {
     _AO.at(i) = i * 4;
   }
 
-  for (std::size_t i = 13; i < _AI.size(); ++i) {
+  for (std::size_t i = 14; i < _AI.size(); ++i) {
     if (i & 1) // Si es impar
       _AI.at(i) = 1111;
   }
@@ -46,7 +46,8 @@ ModbusRTU::ModbusRTU(uint8_t id) : _id(id), _DO(20), _AO(10), _DI(20), _AI(20) {
 
 
 bool ModbusRTU::esValido(Mensaje& recibido, uint8_t funcion) {
-  if (funcion == 1 || funcion == 3 || funcion == 5 || funcion == 6) {
+  if (funcion == 1 || funcion == 2 || funcion == 3
+      || funcion == 4 || funcion == 5 || funcion == 6) {
     return (recibido.size() == 8);
   } else if (funcion == 15 || funcion == 16) {
     try {
