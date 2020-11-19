@@ -9,6 +9,7 @@
 #include <vector>
 #include "Mensaje.hpp"
 
+
 class ModbusRTU {
 
 private:

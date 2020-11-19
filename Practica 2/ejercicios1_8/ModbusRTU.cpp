@@ -457,6 +457,8 @@ Mensaje ModbusRTU::atiende04(Mensaje& recibido) {
   std::cerr << "Entramos en metodo atiende04 con mensaje " << recibido
             << std::endl;
 
+  // Debido al desplazamiento, el offset podría sufrir overflow
+  // por eso elegimos int esta vez
   int offset = recibido.getWordAt(2) - DESPLAZA_AI;
   int numPos = recibido.getWordAt(4);
 
