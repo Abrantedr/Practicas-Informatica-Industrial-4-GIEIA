@@ -24,11 +24,12 @@
 
 
 ModbusTCP::ModbusTCP(uint16_t puerto, uint8_t unitId) : _puerto(puerto),
-    _mbusRTU(unitId){
+                                                        _mbusRTU(unitId){
 
 }
 
 
+#ifdef __unix__
 void ModbusTCP::atiende(unsigned numClientes) {
 
   // creamos socket TCP para escuchar
@@ -36,7 +37,6 @@ void ModbusTCP::atiende(unsigned numClientes) {
   if (sfdl == -1) {
     std::string mensaje = "Error abriendo socket: ";
     mensaje += std::strerror(errno);
-
     std::cerr << mensaje << std::endl;
     throw std::runtime_error(mensaje);
   }
@@ -52,22 +52,21 @@ void ModbusTCP::atiende(unsigned numClientes) {
   if(bind(sfdl, (struct sockaddr*)&si_mio, slen) == -1) {
     std::string mensaje = "Error al intentar bind(): ";
     mensaje += std::strerror(errno);
-
-    std::cerr << "Error al intentar bind(): " << std::strerror(errno)
-              << std::endl;
-    return 2;
+    std::cerr << mensaje << std::endl;
+    throw std::runtime_error(mensaje);
   }
 
   //activamos la escucha para 1 cliente
-  if(listen(sfdl, 1) == -1) {
-    std::cerr << "Error al intentar listen(): " << std::strerror(errno)
-              << std::endl;
-    return 3;
+  if(listen(sfdl, numClientes) == -1) {
+    std::string mensaje = "Error al intentar listen(): ";
+    mensaje += std::strerror(errno);
+    std::cerr << mensaje << std::endl;
+    throw std::runtime_error(mensaje);
   }
 
-  int numEcos = 0;
+  unsigned clienteActual = 0;
   //esperamos que acceda un cliente
-  while (1) {
+  while (clienteActual < numClientes) {
     std::cout << "\n\nEsperando cliente" << std::endl;
 
     struct sockaddr_in si_otro;
@@ -75,8 +74,10 @@ void ModbusTCP::atiende(unsigned numClientes) {
                      (struct sockaddr *) &si_otro, &slen);
 
     if (sfd == -1) {
-      std::cerr << "Error en el accept: " << std::strerror(errno) << std::endl;
-      return 4;
+      std::string mensaje = "Error en el accept: ";
+      mensaje += std::strerror(errno);
+      std::cerr << mensaje << std::endl;
+      throw std::runtime_error(mensaje);
     }
     std::cout << "Conectado cliente desde "
               << inet_ntoa(si_otro.sin_addr)
@@ -89,36 +90,67 @@ void ModbusTCP::atiende(unsigned numClientes) {
       char buf[BUFLEN];
       int recv_len = recv(sfd, buf, BUFLEN, 0);
       if (recv_len == -1) {
-        std::cerr << "Error al recibir datos: " << std::strerror(errno)
-                  << std::endl;
-        return 5;
+        std::string mensaje = "Error al recibir datos: ";
+        mensaje += std::strerror(errno);
+
+        std::cerr << mensaje << std::endl;
+        throw std::runtime_error(mensaje);
       } else if (recv_len == 0) {
         std::cout << "Cliente cerró comunicación" << std::endl;
         break; // esperamos por siguiente cliente
       }
 
-      std::cout << "Recibidos " << recv_len
-                << " bytes" << std::endl;
-      std::cout << "Datos: " << buf << std::endl;
+      std::cout << "Recibidos " << recv_len << " bytes" << std::endl;
 
-      numEcos++;
-      std::string respuesta = "(Eco " + std::to_string(numEcos) + ") " + buf;
+      Mensaje mensajeOriginal;
+      // Rellena el mensaje original a partir del buffer
+      for (int i = 0; i < recv_len; i++) {
+        mensajeOriginal.pushByte_back((uint8_t)buf[i]);
+      }
+
+      std::cout << "El mensaje recibido es " << mensajeOriginal
+                << std::endl;
+
+      Mensaje mensajeRTU = mensajeOriginal; // Copiamos el original
+
+      // Quitamos los 6 primeros caracteres
+      mensajeRTU.erase(mensajeRTU.begin(), mensajeRTU.begin() + 6);
+      mensajeRTU.aniadeCRC(); // CRC requerido para Modbus/RTU
+
+      std::cout << "El mensaje RTU es " << mensajeRTU << std::endl;
+
+      Mensaje respuestaRTU = _mbusRTU.peticion(mensajeRTU);
+
+      std::cout << "RespuestaRTU: " << respuestaRTU << std::endl;
+
+      respuestaRTU.insert(respuestaRTU.begin(), mensajeOriginal.begin(),
+                          mensajeOriginal.begin() + 6);
+      respuestaRTU.erase(respuestaRTU.end() - 2, respuestaRTU.end());
+      respuestaRTU.setWordAt(4, respuestaRTU.size() - 6);
+
+      std::cout << "Respuesta: " << respuestaRTU << std::endl;
+
+      for (unsigned int i = 0; i < respuestaRTU.size(); ++i) {
+        buf[i] = (char)respuestaRTU.getByteAt(i);
+      }
 
       // reenviamos respuesta al cliente
-      int send_len = send(sfd, respuesta.c_str(), respuesta.size() + 1, 0);
+      int send_len = send(sfd, buf, respuestaRTU.size(), 0);
       if (send_len == -1) {
         std::string mensaje = "Error enviando respuesta: ";
         mensaje += std::strerror(errno);
         std::cerr << mensaje << std::endl;
-        return 5;
+        throw std::runtime_error(mensaje);
       }
     }
     int cl = close(sfd); // cerramos comunicación con cliente
     if (cl == -1) {
-      std::cerr << "Error al cerrar con cliente: " << std::strerror(errno)
-                << std::endl;
+      std::cerr << "Error al cerrar con cliente: "
+          << std::strerror(errno) << std::endl;
     }
+    clienteActual++;
   }
   close(sfdl);
-  return 0;
 }
+
+#endif

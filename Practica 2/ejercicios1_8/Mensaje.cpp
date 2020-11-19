@@ -16,7 +16,7 @@ std::string Mensaje::toString() const {
   os << "[(" << _bytes.size() << ") ";
   for (unsigned _byte : _bytes) {
     os << std::hex << std::setw(2) << std::setfill('0')
-        << _byte << " ";
+       << _byte << " ";
   }
   os << "]";
   return os.str();
@@ -24,6 +24,25 @@ std::string Mensaje::toString() const {
 
 unsigned Mensaje::size() const {
   return _bytes.size();
+}
+
+std::vector<uint8_t>::const_iterator Mensaje::begin() const {
+  return _bytes.begin();
+}
+
+std::vector<uint8_t>::const_iterator Mensaje::end() const {
+  return _bytes.end();
+}
+
+void Mensaje::erase(std::vector<uint8_t>::const_iterator begin,
+                    std::vector<uint8_t>::const_iterator end) {
+  _bytes.erase(begin, end);
+}
+
+void Mensaje::insert(std::vector<uint8_t>::const_iterator beginRTU,
+                     std::vector<uint8_t>::const_iterator beginOriginal,
+                     std::vector<uint8_t>::const_iterator endOriginal) {
+  _bytes.insert(beginRTU, beginOriginal, endOriginal);
 }
 
 uint8_t Mensaje::getByteAt(unsigned ind) const {

@@ -12,8 +12,8 @@
 class ModbusTCP {
 
 private:
-  uint16_t _puerto;
-  ModbusRTU _mbusRTU;
+  uint16_t _puerto; // Puerto TCP por el que escucha el Modbus/TCP
+  ModbusRTU _mbusRTU; // Identificador de la unidad Modbus/RTU conectada
 
 public:
   //Constructor que indica el puerto TCP donde debe escuchar y el
@@ -29,6 +29,5 @@ public:
   void atiende(unsigned numClientes);
 
 };
-
 
 #endif // _MODBUSTCP_

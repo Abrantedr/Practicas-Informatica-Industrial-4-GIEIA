@@ -44,6 +44,21 @@ public:
   // Devuelve el número de bytes que tienen el mensaje en ese momento.
   unsigned size() const;
 
+  // Devuelve el iterador al principio del mensaje
+  std::vector<uint8_t>::const_iterator begin() const;
+
+  // Devuelve el iterador al final del mensaje
+  std::vector<uint8_t>::const_iterator end() const;
+
+  // Borra el mensaje desde el principio hasta una posición dada
+  void erase(std::vector<uint8_t>::const_iterator begin,
+             std::vector<uint8_t>::const_iterator end);
+
+  // Inserta parte de un mensaje en otro
+  void insert(std::vector<uint8_t>::const_iterator beginRTU,
+              std::vector<uint8_t>::const_iterator beginOriginal,
+              std::vector<uint8_t>::const_iterator endOriginal);
+
   // Devuelve el byte que se encuentra en la posición ind del mensaje.
   uint8_t getByteAt(unsigned ind) const;
 

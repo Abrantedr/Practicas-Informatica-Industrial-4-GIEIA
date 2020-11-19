@@ -23,7 +23,7 @@
 #include "ModbusRTU.hpp"
 
 ModbusRTU::ModbusRTU(uint8_t id) : _id(id), _DO(20), _AO(10), _DI(20),
-    _AI(FIN_AI - INICIO_AI + 1) {
+                                   _AI(FIN_AI - INICIO_AI + 1) {
   // Las primeros 20 salidas digitales con un valor inicial de 0 en las
   // posiciones pares y de 1 las posiciones impares.
   for (std::size_t i = 0; i < _DO.size(); i += 2) {
@@ -42,7 +42,7 @@ ModbusRTU::ModbusRTU(uint8_t id) : _id(id), _DO(20), _AO(10), _DI(20),
   }
 
   std::cerr << "Se ha creado un ModbusRTU con ID: " << (int)_id
-      << std::endl;
+            << std::endl;
 
   muestraRegistro<uint16_t>(_AO, "[AO]: ");
   muestraRegistro<bool>(_DO, "[DO]: ");
@@ -59,10 +59,10 @@ bool ModbusRTU::esValido(Mensaje& recibido, uint8_t funcion) {
   } else if (funcion == 15 || funcion == 16) {
     try {
       uint16_t numDatos = recibido.getByteAt(6);
-      return (recibido.size() == 9 + numDatos);
+      return (recibido.size() == (uint16_t)9 + numDatos);
     } catch (std::out_of_range& e) {
       std::cerr << "No se ha podido acceder al numero de datos"
-          << std::endl;
+                << std::endl;
       return false;
     }
   }
@@ -103,7 +103,7 @@ Mensaje ModbusRTU::peticion(Mensaje& recibido) {
   }
 
   std::cerr << "El mensaje es para " << (int)id << " y la funcion es "
-      << (int)funcion << std::endl;
+            << (int)funcion << std::endl;
 
   if (id != _id || !recibido.crcOK()) {
     std::cerr << "ID invalida o CRC incorrecto." << std::endl;
@@ -150,8 +150,8 @@ Mensaje ModbusRTU::peticion(Mensaje& recibido) {
 template <class T, class U> bool ModbusRTU::dentroDeRango(
     const std::vector<T>& registro, U offset, U numPos) const {
   return (offset >= 0) && (offset < registro.size())
-      && ((offset + numPos) >= offset)
-      && ((offset + numPos) <= registro.size());
+         && ((offset + numPos) >= offset)
+         && ((offset + numPos) <= registro.size());
 }
 
 
@@ -159,7 +159,7 @@ Mensaje ModbusRTU::generaError(Mensaje& recibido, uint8_t errorCode) {
   Mensaje respuesta;
 
   std::cerr << "Generando mensaje de error " << (int)errorCode
-      << std::endl;
+            << std::endl;
   respuesta.pushByte_back(recibido.getByteAt(0)); // Direcc.
   respuesta.pushByte_back(recibido.getByteAt(1) | (1 << 7)); // Funcion
   respuesta.pushByte_back(errorCode);
@@ -174,7 +174,7 @@ Mensaje ModbusRTU::atiende03(Mensaje& recibido) {
   Mensaje respuesta;
 
   std::cerr << "Entramos en metodo atiende03 con mensaje " << recibido
-      << std::endl;
+            << std::endl;
 
   uint16_t offset = recibido.getWordAt(2);
   uint16_t numPos = recibido.getWordAt(4);
@@ -188,7 +188,7 @@ Mensaje ModbusRTU::atiende03(Mensaje& recibido) {
 
   for (std::size_t i = offset; i < (offset + numPos); ++i) { // Datos
     std::cerr << "Accediendo AO[" << i << "]: " << _AO.at(i)
-        << std::endl;
+              << std::endl;
     respuesta.pushWord_back(_AO.at(i));
   }
 
@@ -203,7 +203,7 @@ Mensaje ModbusRTU::atiende01(Mensaje& recibido) {
   Mensaje respuesta;
 
   std::cerr << "Entramos en metodo atiende01 con mensaje " << recibido
-      << std::endl;
+            << std::endl;
 
   uint16_t offset = recibido.getWordAt(2);
   uint16_t numPos = recibido.getWordAt(4);
@@ -220,7 +220,7 @@ Mensaje ModbusRTU::atiende01(Mensaje& recibido) {
   uint8_t dato = 0;
   for (std::size_t i = offset; i < (offset + numPos); ++i) {
     std::cerr << "Accediendo DO[" << i << "]: " << _DO.at(i)
-        << std::endl;
+              << std::endl;
     if (_DO.at(i))
       dato |= 1 << posBit;
     ++posBit;
@@ -245,7 +245,7 @@ Mensaje ModbusRTU::atiende01(Mensaje& recibido) {
 Mensaje ModbusRTU::atiende05(Mensaje& recibido) {
 
   std::cerr << "Entramos en metodo atiende05 con mensaje " << recibido
-      << std::endl;
+            << std::endl;
 
   uint16_t offset = recibido.getWordAt(2);
 
@@ -257,13 +257,13 @@ Mensaje ModbusRTU::atiende05(Mensaje& recibido) {
       (recibido.getByteAt(5) == 0x00)) {
     _DO.at(offset) = true;
     std::cerr << "Ponemos a 1 la DO[" << offset << "]: "
-        << _DO.at(offset) << std::endl;
+              << _DO.at(offset) << std::endl;
   } else if (
       (recibido.getByteAt(4) == 0x00) &&
       (recibido.getByteAt(5) == 0x00)) {
     _DO.at(offset) = false;
     std::cerr << "Ponemos a 0 la DO[" << offset << "]: "
-        << _DO.at(offset) << std::endl;
+              << _DO.at(offset) << std::endl;
   } else {
     // El valor es inválido
     return generaError(recibido, 0x03);
@@ -276,7 +276,7 @@ Mensaje ModbusRTU::atiende15(Mensaje& recibido) {
   Mensaje respuesta;
 
   std::cerr << "Entramos en metodo atiende15 con mensaje " << recibido
-      << std::endl;
+            << std::endl;
 
   uint16_t offset = recibido.getWordAt(2);
   uint16_t numPos = recibido.getWordAt(4);
@@ -289,7 +289,7 @@ Mensaje ModbusRTU::atiende15(Mensaje& recibido) {
   unsigned posBit = 0;
   for (std::size_t i = offset; i < (offset + numPos); ++i) {
     std::cerr << "Accediendo DO[" << i << "]: " << _DO.at(i)
-        << std::endl;
+              << std::endl;
     _DO.at(i) = dato & (1 << posBit);
     ++posBit;
     if (posBit == 8) { // Hemos rellenado un byte
@@ -322,7 +322,7 @@ Mensaje ModbusRTU::atiende06(Mensaje& recibido) {
     return generaError(recibido, 0x02);
 
   std::cerr << "Ponemos a " << (int)valor << " la AO[" << offset
-      << "]: " << _AO.at(offset) << std::endl;
+            << "]: " << _AO.at(offset) << std::endl;
   _AO.at(offset) = valor;
 
   return recibido;
@@ -333,7 +333,7 @@ Mensaje ModbusRTU::atiende16(Mensaje& recibido) {
   Mensaje respuesta;
 
   std::cerr << "Entramos en metodo atiende16 con mensaje " << recibido
-      << std::endl;
+            << std::endl;
 
   uint16_t offset = recibido.getWordAt(2);
   uint16_t numPos = recibido.getWordAt(4);
