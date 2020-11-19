@@ -4,7 +4,7 @@
 
 #ifdef __unix__
 
-#include <unistd.h>
+#include <unistd.h> // getuid, getgid, getpid, getppid
 
 #elif defined(_WIN64) || defined(WIN64)
 
@@ -14,9 +14,7 @@
 
 #include <iostream>
 #include <ctime>
-
 #include "ModbusRTU.hpp"
-
 
 ModbusRTU::ModbusRTU(uint8_t id) : _id(id), _DO(20), _AO(10), _DI(20), _AI(20) {
   // Las primeros 20 salidas digitales con un valor inicial de 0 en las
@@ -69,27 +67,32 @@ Mensaje ModbusRTU::peticion(Mensaje& recibido) {
 
   std::cerr << "Recibido mensaje " << recibido << std::endl;
 
+  // Actualizamos los atributos del ModbusRTU
+  _petRecibidas++;
+  if (recibido.crcOK())
+    _byteRecibidos += recibido.size() - 2;
+  actualizaAI();
+  std::cerr << "Actualizando [AI]" << std::endl;
+  muestraRegistro<uint16_t>(_AI, "[AI]: ");
+  muestraRegistro<bool>(_DI, "[DI]: ");
+  std::cerr << std::endl;
+
+  // Antes de acceder al mensaje
+  // Comprobamos que es válido
   uint8_t id = 0;
   uint8_t funcion = 0;
   if (recibido.size() >= 2) {
     // El mensaje tiene al menos un id y una función
     id = recibido.getByteAt(0);
     funcion = recibido.getByteAt(1);
-    // Actualizamos los atributos del ModbusRTU
-    _petRecibidas++;
-    if (recibido.crcOK())
-      _byteRecibidos += recibido.size() - 2;
-    actualizaAI();
   }
 
-  std::cerr << "Actualizando [AI]" << std::endl;
-  muestraRegistro<uint16_t>(_AI, "[AI]: ");
-  muestraRegistro<bool>(_DI, "[DI]: ");
-  std::cerr << std::endl;
-
   // Según la función, validamos el mensaje
-  if (!esValido(recibido, funcion))
-    return generaError(recibido, 0x03);
+  if (!esValido(recibido, funcion)) {
+    respuesta = generaError(recibido, 0x03);
+    _byteEnviados += respuesta.size() - 2; // Excluye el CRC
+    return respuesta;
+  }
 
   std::cerr << "El mensaje es para " << (int)id << " y la funcion es "
       << (int)funcion << std::endl;
@@ -97,15 +100,21 @@ Mensaje ModbusRTU::peticion(Mensaje& recibido) {
   if (id != _id || !recibido.crcOK()) {
     std::cerr << "ID invalida o CRC incorrecto." << std::endl;
     std::cerr << "Respuesta: " << respuesta << std::endl;
-    return respuesta;
+    return respuesta; // Respuesta vacía, no se actualiza _byteEnviados
   }
 
   switch (funcion) {
     case 1: // Lectura de salidas digitales
       respuesta = atiende01(recibido);
       break;
+    case 2: // Lectura de entradas digitales
+      respuesta = atiende02(recibido);
+      break;
     case 3: // Lectura de salidas analógicas
       respuesta = atiende03(recibido);
+      break;
+    case 4: // Lectura de entradas analógicas
+      respuesta = atiende04(recibido);
       break;
     case 5: // Fuerza una única salida digital
       respuesta = atiende05(recibido);
@@ -124,6 +133,8 @@ Mensaje ModbusRTU::peticion(Mensaje& recibido) {
       respuesta = generaError(recibido, 0x01);
   }
   std::cerr << std::endl;
+  // Se ha enviado un mensaje de respuesta. Se actualiza _byteEnviados
+  _byteEnviados += respuesta.size() - 2; // Excluye el CRC
   return respuesta;
 }
 
@@ -147,8 +158,6 @@ Mensaje ModbusRTU::generaError(Mensaje& recibido, uint8_t errorCode) {
   respuesta.aniadeCRC();
 
   std::cerr << "Mensaje de error: " << respuesta << std::endl;
-  _byteEnviados += respuesta.size() - 2; // Excluye el CRC
-
   return respuesta;
 }
 
@@ -178,7 +187,6 @@ Mensaje ModbusRTU::atiende03(Mensaje& recibido) {
   respuesta.aniadeCRC(); // CRC
 
   std::cerr << "Respuesta: " << respuesta << std::endl;
-  _byteEnviados += respuesta.size() - 2; // Excluye el CRC
   return respuesta;
 }
 
@@ -222,7 +230,6 @@ Mensaje ModbusRTU::atiende01(Mensaje& recibido) {
   respuesta.aniadeCRC(); // CRC
 
   std::cerr << "Respuesta: " << respuesta << std::endl;
-  _byteEnviados += respuesta.size() - 2; // Excluye el CRC
   return respuesta;
 }
 
@@ -253,7 +260,6 @@ Mensaje ModbusRTU::atiende05(Mensaje& recibido) {
     // El valor es inválido
     return generaError(recibido, 0x03);
   }
-  _byteEnviados += recibido.size() - 2; // Excluye el CRC
   return recibido;
 }
 
@@ -292,7 +298,6 @@ Mensaje ModbusRTU::atiende15(Mensaje& recibido) {
   respuesta.aniadeCRC(); // CRC
 
   std::cerr << "Respuesta: " << respuesta << std::endl;
-  _byteEnviados += respuesta.size() - 2; // Excluye el CRC
   return respuesta;
 }
 
@@ -312,7 +317,6 @@ Mensaje ModbusRTU::atiende06(Mensaje& recibido) {
       << "]: " << _AO.at(offset) << std::endl;
   _AO.at(offset) = valor;
 
-  _byteEnviados += recibido.size() - 2; // Excluye el CRC
   return recibido;
 }
 
@@ -344,7 +348,6 @@ Mensaje ModbusRTU::atiende16(Mensaje& recibido) {
   respuesta.aniadeCRC(); // CRC
 
   std::cerr << "Respuesta: " << respuesta << std::endl;
-  _byteEnviados += respuesta.size() - 2; // Excluye el CRC
   return respuesta;
 }
 
@@ -395,4 +398,75 @@ template <class T> void ModbusRTU::muestraRegistro(
     std::cerr << k << ", ";
   }
   std::cerr << std::endl;
+}
+
+
+Mensaje ModbusRTU::atiende02(Mensaje& recibido) {
+  Mensaje respuesta;
+
+  std::cerr << "Entramos en metodo atiende02 con mensaje " << recibido
+            << std::endl;
+
+  uint16_t offset = recibido.getWordAt(2);
+  uint16_t numPos = recibido.getWordAt(4);
+
+  if (!dentroDeRango<bool>(_DI, offset, numPos))
+    return generaError(recibido, 0x02);
+
+  unsigned numBytes = ((numPos - 1) / 8) + 1;
+  respuesta.pushByte_back(recibido.getByteAt(0)); // Dirección
+  respuesta.pushByte_back(recibido.getByteAt(1)); // Función
+  respuesta.pushByte_back(numBytes); // Número de bytes
+
+  unsigned posBit = 0;
+  uint8_t dato = 0;
+  for (std::size_t i = offset; i < (offset + numPos); ++i) {
+    std::cerr << "Accediendo DI[" << i << "]: " << _DI.at(i)
+              << std::endl;
+    if (_DI.at(i))
+      dato |= 1 << posBit;
+    ++posBit;
+    if (posBit == 8) { // Hemos rellenado un byte
+      respuesta.pushByte_back(dato);
+      posBit = 0;
+      dato = 0;
+    }
+  }
+
+  if (posBit > 0) { // Queda un byte a medio rellenar
+    respuesta.pushByte_back(dato);
+  }
+
+  respuesta.aniadeCRC(); // CRC
+
+  std::cerr << "Respuesta: " << respuesta << std::endl;
+  return respuesta;
+}
+
+Mensaje ModbusRTU::atiende04(Mensaje& recibido) {
+  Mensaje respuesta;
+
+  std::cerr << "Entramos en metodo atiende04 con mensaje " << recibido
+            << std::endl;
+
+  uint16_t offset = recibido.getWordAt(2);
+  uint16_t numPos = recibido.getWordAt(4);
+
+  if (!dentroDeRango<uint16_t>(_AI, offset, numPos))
+    return generaError(recibido, 0x02);
+
+  respuesta.pushByte_back(recibido.getByteAt(0)); // Dirección
+  respuesta.pushByte_back(recibido.getByteAt(1)); // Función
+  respuesta.pushByte_back(numPos * 2); // Número de bytes
+
+  for (std::size_t i = offset; i < (offset + numPos); ++i) { // Datos
+    std::cerr << "Accediendo AO[" << i << "]: " << _AI.at(i)
+              << std::endl;
+    respuesta.pushWord_back(_AI.at(i));
+  }
+
+  respuesta.aniadeCRC(); // CRC
+
+  std::cerr << "Respuesta: " << respuesta << std::endl;
+  return respuesta;
 }
