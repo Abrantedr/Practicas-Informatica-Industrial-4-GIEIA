@@ -29,7 +29,7 @@ ModbusRTU::ModbusRTU(uint8_t id) : _id(id), _DO(20), _AO(10), _DI(20), _AI(20) {
     _AO.at(i) = i * 4;
   }
 
-  for (std::size_t i = 14; i < _AI.size(); ++i) {
+  for (std::size_t i = 13; i < _AI.size(); ++i) {
     if (i & 1) // Si es impar
       _AI.at(i) = 1111;
   }
@@ -450,7 +450,7 @@ Mensaje ModbusRTU::atiende04(Mensaje& recibido) {
   std::cerr << "Entramos en metodo atiende04 con mensaje " << recibido
             << std::endl;
 
-  uint16_t offset = recibido.getWordAt(2) - 99; // A partir de 3100
+  uint16_t offset = recibido.getWordAt(2) - 100; // A partir de 3100
   uint16_t numPos = recibido.getWordAt(4);
 
   if (!dentroDeRango<uint16_t>(_AI, offset, numPos))
