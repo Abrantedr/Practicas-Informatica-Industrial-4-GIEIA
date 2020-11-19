@@ -4,7 +4,9 @@
 
 #ifdef __unix__
 
+#include <sys/types.h>
 #include <unistd.h> // getuid, getgid, getpid, getppid
+#include <sys/times.h>
 
 #elif defined(_WIN64) || defined(WIN64)
 
@@ -12,11 +14,16 @@
 
 #endif
 
+#define INICIO_AI (30100)
+#define FIN_AI (30119)
+#define DESPLAZA_AI (INICIO_AI - 30001)
+
 #include <iostream>
 #include <ctime>
 #include "ModbusRTU.hpp"
 
-ModbusRTU::ModbusRTU(uint8_t id) : _id(id), _DO(20), _AO(10), _DI(20), _AI(20) {
+ModbusRTU::ModbusRTU(uint8_t id) : _id(id), _DO(20), _AO(10), _DI(20),
+    _AI(FIN_AI - INICIO_AI + 1) {
   // Las primeros 20 salidas digitales con un valor inicial de 0 en las
   // posiciones pares y de 1 las posiciones impares.
   for (std::size_t i = 0; i < _DO.size(); i += 2) {
@@ -29,9 +36,9 @@ ModbusRTU::ModbusRTU(uint8_t id) : _id(id), _DO(20), _AO(10), _DI(20), _AI(20) {
     _AO.at(i) = i * 4;
   }
 
-  for (std::size_t i = 13; i < _AI.size(); ++i) {
-    if (i & 1) // Si es impar
-      _AI.at(i) = 1111;
+  // inicialmente a 0 los pares y a 1111 los impares.
+  for (std::size_t i = 0; i < _AI.size(); i += 2) {
+    _AI.at(i) = 1111;
   }
 
   std::cerr << "Se ha creado un ModbusRTU con ID: " << (int)_id
@@ -140,8 +147,8 @@ Mensaje ModbusRTU::peticion(Mensaje& recibido) {
 }
 
 
-template <class T> bool ModbusRTU::dentroDeRango(const std::vector<T>& registro,
-    uint16_t offset, uint16_t numPos) const {
+template <class T, class U> bool ModbusRTU::dentroDeRango(
+    const std::vector<T>& registro, U offset, U numPos) const {
   return (offset >= 0) && (offset < registro.size())
       && ((offset + numPos) >= offset)
       && ((offset + numPos) <= registro.size());
@@ -450,10 +457,10 @@ Mensaje ModbusRTU::atiende04(Mensaje& recibido) {
   std::cerr << "Entramos en metodo atiende04 con mensaje " << recibido
             << std::endl;
 
-  uint16_t offset = recibido.getWordAt(2) - 99; // A partir de 3100
-  uint16_t numPos = recibido.getWordAt(4);
+  int offset = recibido.getWordAt(2) - DESPLAZA_AI;
+  int numPos = recibido.getWordAt(4);
 
-  if (!dentroDeRango<uint16_t>(_AI, offset, numPos))
+  if (!dentroDeRango<uint16_t, int>(_AI, offset, numPos))
     return generaError(recibido, 0x02);
 
   respuesta.pushByte_back(recibido.getByteAt(0)); // Dirección

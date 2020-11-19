@@ -32,12 +32,12 @@ private:
   Mensaje atiende04(Mensaje& recibido); // Lectura de entradas analógicas
 
   // Comprueba si el acceso a un registro está fuera de rango
-  template <class T> bool dentroDeRango(const std::vector<T>& registro,
-      uint16_t offset, uint16_t numPos=0) const;
+  template <class T, class U=uint16_t> bool dentroDeRango(
+      const std::vector<T>& registro, U offset, U numPos=0) const;
 
   // Genera un mensaje de error dado un mensaje recibido y un código de
   // error
-  Mensaje generaError(Mensaje& recibido, uint8_t errorCode);
+  static Mensaje generaError(Mensaje& recibido, uint8_t errorCode);
 
   // Comprueba si un mensaje es válido
   static bool esValido(Mensaje& recibido, uint8_t funcion);
