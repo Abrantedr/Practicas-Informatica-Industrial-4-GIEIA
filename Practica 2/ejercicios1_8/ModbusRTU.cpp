@@ -450,7 +450,7 @@ Mensaje ModbusRTU::atiende04(Mensaje& recibido) {
   std::cerr << "Entramos en metodo atiende04 con mensaje " << recibido
             << std::endl;
 
-  uint16_t offset = recibido.getWordAt(2) - 100; // A partir de 3100
+  uint16_t offset = recibido.getWordAt(2) - 99; // A partir de 3100
   uint16_t numPos = recibido.getWordAt(4);
 
   if (!dentroDeRango<uint16_t>(_AI, offset, numPos))
