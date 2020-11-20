@@ -16,6 +16,7 @@
 #endif
 
 #define BUFLEN 512  // Longitud del buffer
+#define HEADLEN 6 // Longitud de la cabecera del mensaje TCP
 
 #include <iostream> // std::cout, std::endl
 #include <cstring> // std::strerror()
@@ -87,17 +88,18 @@ void ModbusTCP2::atiende(unsigned numClientes) {
 
       char buf[BUFLEN];
       int recv_len = recv(sfd, buf, BUFLEN, MSG_PEEK);
-      // Copiamos el contenido del mensaje en buf sin
-      // eliminarlo de la cola de entrada
+      // Copiamos el contenido del mensaje en el buffer
+      // sin eliminarlo de la cola de entrada. Obtenemos
+      // el tamaño completo del stream.
 
       // Tratamos de leer la cabecera del mensaje
       uint8_t msb_len = buf[4];
       uint8_t lsb_len = buf[5];
       uint16_t tcp_len = (uint16_t)msb_len << 8 | lsb_len;
-      if (recv_len != (7 + tcp_len)) // cabecera tcp + tamaño resto
-        // del mensaje + ' \0'
-        recv_len = recv(sfd, buf, 6 + tcp_len, 0); // Lee solamente
-        // la cabecera tcp + el resto del tamaño del mensaje
+      if (recv_len == (HEADLEN + tcp_len)) // Tenemos un sólo paquete
+        recv_len = recv(sfd, buf, recv_len, 0); // Lee y elimina
+      else // Tenemos más de un paquete
+        recv_len = recv(sfd, buf, HEADLEN + tcp_len, 0);
       if (recv_len == -1) {
         std::string mensaje = "Error al recibir datos: ";
         mensaje += std::strerror(errno);
