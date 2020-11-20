@@ -1,5 +1,15 @@
 # Practicas-Informatica-Industrial-4-GIEIA
+>Los problemas tratados en las prácticas de esta asignatura no me pertenecen: **son soluciones particulares y no se da la garantía de que puedan funcionar correctamente en producción**. El motivo de este repositorio es puramente académico, por lo que se permite compartir, con el mismo fin, todo lo que aquí se expone. Gran parte del código que se encuentra en este repositorio pertenece al profesor Alberto Francisco Hamilton Castro.
+
+## Práctica 1
+1. Cada ejercicio se encuentra en su propia carpeta: `ejercicio01`, `ejercicio02`, `ejercicio03`, ...
+2. Copia el código fuente del ejercicio `main.cpp` en el directorio `ficheros`
+3. Copia el archivo de testeo correspondiente `testea<número de test>.sh` en el directorio `ficheros` (Ej. `testea01.sh` para `main.cpp` del `ejercicio01`, ...)
+4. Abre un terminal en `ficheros` y da permiso al test que quieres ejecutar con `chmod +x testea<número de test>.sh` (Ej. `chmod +x testea01.sh`)
+5. Ejecuta el test escribiendo en el terminal `./testea<número de test>.sh main.cpp` (Ej. `./testea01.sh main.cpp`)
+
 ## Práctica 2
+### **¡IMPORTANTE! Las clases ModbusTCP sólo funcionan en sistemas GNU/Linux.**
 1. Copia las clases `Mensaje`, `ModbusRTU`, `ModbusTCP`, `ModbusTCP2` y `ModbusTCP2Multiple` en el directorio `FicherosP2`
 2. Abre un terminal y escribe `make fail`
 3. Resultado:
