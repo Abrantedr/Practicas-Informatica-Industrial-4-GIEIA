@@ -106,6 +106,22 @@ void ModbusTCP::atiende(unsigned numClientes) {
         mensajeOriginal.pushByte_back((uint8_t)buf[i]);
       }
 
+      // El mensaje original cuenta con un word 'length' en la
+      // posición 4
+      unsigned length = 0;
+      try {
+        length = mensajeOriginal.getWordAt(4);
+        if (mensajeOriginal.size() != ((uint16_t)6 + length)) {
+          std::cerr << "Se ha recibido mas de un paquete" << std::endl;
+          std::cerr << "Nos quedamos con el primer paquete" << std::endl;
+          mensajeOriginal.erase(mensajeOriginal.begin()
+              + (unsigned)6 + length, mensajeOriginal.end());
+        }
+      } catch (std::out_of_range& e) {
+        std::cerr << "No se ha podido capturar el tamaño del mensaje"
+            << std::endl;
+      }
+
       std::cout << "El mensaje recibido es " << mensajeOriginal
                 << std::endl;
 
@@ -119,7 +135,7 @@ void ModbusTCP::atiende(unsigned numClientes) {
 
       Mensaje respuestaRTU = _mbusRTU.peticion(mensajeRTU);
 
-      std::cout << "RespuestaRTU: " << respuestaRTU << std::endl;
+      std::cout << "Respuesta del RTU: " << respuestaRTU << std::endl;
 
       respuestaRTU.insert(respuestaRTU.begin(), mensajeOriginal.begin(),
                           mensajeOriginal.begin() + 6);
