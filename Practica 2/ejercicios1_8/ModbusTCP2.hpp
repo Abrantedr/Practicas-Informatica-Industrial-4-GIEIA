@@ -1,24 +1,27 @@
 //
-// Created by Rubén Abrante Delgado on 19/11/2020.
+// Created by Rubén Abrante Delgado on 20/11/2020.
 //
 
-#ifndef _MODBUSTCP_
-#define _MODBUSTCP_
+#ifndef _MODBUSTCP2_
+#define _MODBUSTCP2_
 
-
-#include <cstdint>
 #include "ModbusRTU.hpp"
 
-class ModbusTCP {
+class ModbusTCP2 {
 
 private:
   uint16_t _puerto; // Puerto TCP por el que escucha el Modbus/TCP
-  ModbusRTU _mbusRTU; // Unidad Modbus/RTU conectada
+
+  ModbusRTU _mbusRTU1; // Unidad 1 Modbus/RTU conectada
+  ModbusRTU _mbusRTU2; // Unidad 2 Modbus/RTU conectada
+
+  uint8_t _uId1; // Identificador 1 de la unidad ModbusRTU1
+  uint8_t _uId2; // Identificador 2 de la unidad ModbusRTU2
 
 public:
   //Constructor que indica el puerto TCP donde debe escuchar y el
-  // identificador de la unidad ModbusRTU conectada.
-  ModbusTCP(uint16_t puerto, uint8_t unitId);
+  // identificador de las dos unidades ModbusRTU conectadas.
+  ModbusTCP2(uint16_t puerto, uint8_t unId1, uint8_t uId2);
 
   /* Abre la conexión TCP , acepta conexiones de los clientes redirigiendo
    * las peticiones a la unidad ModbusRTU y devolviendo la respuesta al
@@ -30,4 +33,5 @@ public:
 
 };
 
-#endif // _MODBUSTCP_
+
+#endif // _MODBUSTCP2_

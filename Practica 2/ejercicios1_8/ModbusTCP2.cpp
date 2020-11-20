@@ -1,5 +1,5 @@
 //
-// Created by Rubén Abrante Delgado on 19/11/2020.
+// Created by Rubén Abrante Delgado on 20/11/2020.
 // Works only in GNU/Linux Systems
 
 #ifdef __unix__
@@ -20,17 +20,16 @@
 #include <iostream> // std::cout, std::endl
 #include <cstring> // std::strerror()
 #include <string>
-#include "ModbusTCP.hpp"
+#include "ModbusTCP2.hpp"
 
 
-ModbusTCP::ModbusTCP(uint16_t puerto, uint8_t unitId) : _puerto(puerto),
-    _mbusRTU(unitId){
-
-}
+ModbusTCP2::ModbusTCP2(uint16_t puerto, uint8_t uId1, uint8_t uId2)
+    : _puerto(puerto), _mbusRTU1(uId1), _mbusRTU2(uId2), _uId1(uId1),
+    _uId2(uId2) {}
 
 
 #ifdef __unix__
-void ModbusTCP::atiende(unsigned numClientes) {
+void ModbusTCP2::atiende(unsigned numClientes) {
 
   // creamos socket TCP para escuchar
   int sfdl = socket(AF_INET, SOCK_STREAM, 0);
@@ -136,7 +135,13 @@ void ModbusTCP::atiende(unsigned numClientes) {
 
       std::cout << "El mensaje RTU es " << mensajeRTU << std::endl;
 
-      Mensaje respuestaRTU = _mbusRTU.peticion(mensajeRTU);
+      uint8_t uId = mensajeRTU.getByteAt(0);
+
+      Mensaje respuestaRTU;
+      if (uId == _uId1)
+        respuestaRTU = _mbusRTU1.peticion(mensajeRTU);
+      else if (uId == _uId2)
+        respuestaRTU = _mbusRTU2.peticion(mensajeRTU);
 
       std::cout << "Respuesta del RTU: " << respuestaRTU << std::endl;
 
