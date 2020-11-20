@@ -4,7 +4,6 @@
 2. Abre un terminal y escribe `make fail`
 3. Resultado:
 
-<span style="color:blue">some *blue* text</span>.\
 ==== prueba01 CORRECTA   "Mensaje: probando toString()"\
 ==== prueba02 CORRECTA   "Mensaje: Probando getByteAt() setByteAt() pushByte_back()"\
 ==== prueba03 CORRECTA   "Mensaje: Probando getWordAt()"\
