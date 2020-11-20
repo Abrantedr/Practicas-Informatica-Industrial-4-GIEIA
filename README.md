@@ -2,8 +2,9 @@
 ## Práctica 2
 1. Copia las clases `Mensaje`, `ModbusRTU`, `ModbusTCP`, `ModbusTCP2` y `ModbusTCP2Multiple` en el directorio `FicherosP2`
 2. Abre un terminal y escribe `make fail`
-3. Resultado:\
+3. Resultado:
 
+<span style="color:blue">some *blue* text</span>.\
 ==== prueba01 CORRECTA   "Mensaje: probando toString()"\
 ==== prueba02 CORRECTA   "Mensaje: Probando getByteAt() setByteAt() pushByte_back()"\
 ==== prueba03 CORRECTA   "Mensaje: Probando getWordAt()"\
