@@ -208,5 +208,6 @@ void ModbusTCP2Multiple::atiendeCliente(int sfd, struct sockaddr_in si_otro) {
         << std::strerror(errno) << std::endl;
   }
 }
-Te Quiero muchisimo
+
+
 #endif
