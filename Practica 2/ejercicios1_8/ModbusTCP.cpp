@@ -92,21 +92,13 @@ void ModbusTCP::atiende(unsigned numClientes) {
       // eliminarlo de la cola de entrada
 
       // Tratamos de leer la cabecera del mensaje
-      uint8_t msb_len;
-      uint8_t lsb_len;
-      uint16_t tcp_len;
-      try {
-        msb_len = buf[4];
-        lsb_len = buf[5];
-        tcp_len = (uint16_t)msb_len << 8 | lsb_len;
-        if (recv_len != (7 + tcp_len)) // cabecera tcp + tamaño resto
-          // del mensaje + ' \0'
-          recv_len = recv(sfd, buf, 6 + tcp_len, 0); // Lee solamente
-          // la cabecera tcp + el resto del tamaño del mensaje
-      } catch (std::out_of_range& e) {
-        std::cerr << "No se ha podido leer la cabecera del mensaje TCP"
-            << std::endl;
-      }
+      uint8_t msb_len = buf[4];
+      uint8_t lsb_len = buf[5];
+      uint16_t tcp_len = (uint16_t)msb_len << 8 | lsb_len;
+      if (recv_len != (7 + tcp_len)) // cabecera tcp + tamaño resto
+        // del mensaje + ' \0'
+        recv_len = recv(sfd, buf, 6 + tcp_len, 0); // Lee solamente
+        // la cabecera tcp + el resto del tamaño del mensaje
       if (recv_len == -1) {
         std::string mensaje = "Error al recibir datos: ";
         mensaje += std::strerror(errno);
