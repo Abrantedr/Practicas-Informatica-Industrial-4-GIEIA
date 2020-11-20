@@ -15,7 +15,7 @@
 // Placeholder
 #endif
 
-#define BUFLEN 256  // Longitud del buffer
+#define BUFLEN 512  // Longitud del buffer
 
 #include <iostream> // std::cout, std::endl
 #include <cstring> // std::strerror()
@@ -24,7 +24,7 @@
 
 
 ModbusTCP::ModbusTCP(uint16_t puerto, uint8_t unitId) : _puerto(puerto),
-                                                        _mbusRTU(unitId){
+    _mbusRTU(unitId){
 
 }
 
@@ -79,9 +79,8 @@ void ModbusTCP::atiende(unsigned numClientes) {
       std::cerr << mensaje << std::endl;
       throw std::runtime_error(mensaje);
     }
-    std::cout << "Conectado cliente desde "
-              << inet_ntoa(si_otro.sin_addr)
-              << ":" << ntohs(si_otro.sin_port) << std::endl;
+    std::cout << "Conectado cliente desde " << inet_ntoa(si_otro.sin_addr)
+        << ":" << ntohs(si_otro.sin_port) << std::endl;
 
     // bucle de espera de datos
     while(1) {
@@ -92,7 +91,6 @@ void ModbusTCP::atiende(unsigned numClientes) {
       if (recv_len == -1) {
         std::string mensaje = "Error al recibir datos: ";
         mensaje += std::strerror(errno);
-
         std::cerr << mensaje << std::endl;
         throw std::runtime_error(mensaje);
       } else if (recv_len == 0) {
