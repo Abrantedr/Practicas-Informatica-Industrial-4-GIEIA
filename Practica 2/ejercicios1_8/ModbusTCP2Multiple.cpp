@@ -31,7 +31,7 @@ ModbusTCP2Multiple::ModbusTCP2Multiple(uint16_t puerto, uint8_t uId1, uint8_t uI
 
 
 #ifdef __unix__
-void ModbusTCP2::atiende(unsigned numClientes) {
+void ModbusTCP2Multiple::atiende(unsigned numClientes) {
 
   // creamos socket TCP para escuchar
   int sfdl = socket(AF_INET, SOCK_STREAM, 0);
@@ -85,7 +85,7 @@ void ModbusTCP2::atiende(unsigned numClientes) {
     }
 
     std::thread* ptTh = new std::thread(&ModbusTCP2Multiple::atiendeCliente,
-                                        this, newsockfd, cli_addr);
+                                        this, sfd, si_otro);
     vecThPt.push_back(ptTh);
 
     clienteActual++;
@@ -106,8 +106,8 @@ void ModbusTCP2::atiende(unsigned numClientes) {
 void ModbusTCP2Multiple::atiendeCliente(int sfd, struct sockaddr_in si_otro) {
 
   std::string cliente;
-  cliente = cliente + inet_ntoa(cli_addr.sin_addr) + ":"
-      + std::to_string(cli_addr.sin_port);
+  cliente = cliente + inet_ntoa(si_otro.sin_addr) + ":"
+      + std::to_string(si_otro.sin_port);
 
   std::cerr << "\t\t>>" << cliente << " Recibida conexion" << std::endl;
 
@@ -208,5 +208,5 @@ void ModbusTCP2Multiple::atiendeCliente(int sfd, struct sockaddr_in si_otro) {
         << std::strerror(errno) << std::endl;
   }
 }
-
+Te Quiero muchisimo
 #endif
