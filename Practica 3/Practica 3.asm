@@ -1,6 +1,6 @@
-.include "8515def.inc" ; Incluye el archivo donde est醤 todos los par醡etros
+.include "8515def.inc" ; Incluye el archivo donde est谩n todos los par谩metros
 
-; Vectores de interrupci髇
+; Vectores de interrupci贸n
 .org $000 		rjmp RESET 		; Reset Handler
 .org INT0addr 	rjmp EXT_INT0 	; IRQ0 Handler
 reti 							; IRQ1 Handler
@@ -21,11 +21,11 @@ reti							; Store Program memory Ready Handler
 
 .cseg
 
-RESET:										; Comienzo del programa principal
+RESET:									; Comienzo del programa principal
 	; Inicializamos la pila
 	ldi r16,high(RAMEND)
 	out SPH,r16
-	ldi r16,low(RAMEND)						; En la posici髇 m醩 alejada en memoria
+	ldi r16,low(RAMEND)						; En la posici贸n m谩s alejada en memoria
 	out SPL,r16
 																				
 	; Definimos las entradas				
@@ -37,35 +37,35 @@ RESET:										; Comienzo del programa principal
 	; Definimos las salidas
 	sbi DDRD, DDD5							; PD5 es una salida
 
-	; Configuraci髇 del pulsador
+	; Configuraci贸n del pulsador
 	in r16, GIMSK
 	sbr r16, (1 << INT0)
 	out GIMSK, r16							; Habilitamos INT0
 
 	in r16, MCUCR
-	sbr r16, (1 << ISC00) + (1 << ISC01)	; Configuramos INT0 para que dispare una interrupci髇
+	sbr r16, (1 << ISC00) + (1 << ISC01)				; Configuramos INT0 para que dispare una interrupci贸n
 	out MCUCR, r16							; en el flanco de subida
 
-	; Configuraci髇 de la PWM
+	; Configuraci贸n de la PWM
 	clr r16
 	out OCR1AH, r16							; Ciclo de trabajo al 0%
 	out OCR1AL, r16
 
-	ldi r16, 0b1000_0011					; PWM no invertida, 10 bits de resoluci髇
+	ldi r16, 0b1000_0011						; PWM no invertida, 10 bits de resoluci贸n
 	out TCCR1A, r16
 
 	in r16, TCCR1B
 	sbr r16, (1 << CS10)
 	out TCCR1B, r16							; Ponemos en marcha la PWM a una frecuencia de CK
-											; (CK = 8 MHz)
+									; (CK = 8 MHz)
 	clr r16
 	out TCNT1H, r16							; Reset del counter
 	out TCNT1L, r16
 
 	; Interrupciones		
-	sei 									; Habilitamos las interrupciones
+	sei 								; Habilitamos las interrupciones
 
-LOOP: 										; Definimos un bucle infinito
+LOOP: 									; Definimos un bucle infinito
 	in r16, PIND
 	out PORTC, r16							; Obtenemos la PWM en PORTC
 	rjmp LOOP
@@ -73,8 +73,8 @@ LOOP: 										; Definimos un bucle infinito
 
 
 
-EXT_INT0:									; Interrupci髇 del pulsador
-	cli										; Deshabilitamos las interrupciones
+EXT_INT0:								; Interrupci贸n del pulsador
+	cli								; Deshabilitamos las interrupciones
 
 	; Contador de bits
 	in r16, PINA							; Leemos las entradas del puerto A
@@ -82,16 +82,16 @@ EXT_INT0:									; Interrupci髇 del pulsador
 	clr r0
 	clc
 	COUNT_PINA_BITS:
-		lsr r16								; Desplaza el registro a la derecha
+		lsr r16							; Desplaza el registro a la derecha
 		breq TERMINATE_PINA
-		adc r17, r0							; Suma el bit de acarreo si era un 1
+		adc r17, r0						; Suma el bit de acarreo si era un 1
 		rjmp COUNT_PINA_BITS
 	TERMINATE_PINA:
 		adc r17, r0
 
 
 	in r16, PINB							; Leemos las entradas del puerto B
-	clr r0									; Hacemos lo mismo que en el caso anterior
+	clr r0								; Hacemos lo mismo que en el caso anterior
 	clc
 	COUNT_PINB_BITS:
 		lsr r16
@@ -99,16 +99,16 @@ EXT_INT0:									; Interrupci髇 del pulsador
 		adc r17, r0
 		rjmp COUNT_PINB_BITS
 	TERMINATE_PINB:
-		adc r17, r0							; r17 contiene el n鷐ero de switches a uno
+		adc r17, r0						; r17 contiene el n煤mero de switches a uno
 
 
-	; Calculamos la nueva PWM				; Mediante desplazamiento de registros
+	; Calculamos la nueva PWM					; Mediante desplazamiento de registros
 	clr r16
 	out OCR1AH, r16							; Desde $0000 (BOTTOM) a $03FF (TOP)
 
 	cpi r17, $00
 	breq SET_PWM
-											; Empezamos por el valor m醩 bajo que puede tomar OCR1A
+									; Empezamos por el valor m谩s bajo que puede tomar OCR1A
 	ldi r16, $02							; Ponemos a 1 el bit 1 de r16
 
 	cpi r17, $01
@@ -116,17 +116,17 @@ EXT_INT0:									; Interrupci髇 del pulsador
 	
 	dec r17															
 	SHIFT_LOW:
-		lsl r16								; Lo multiplicamos por 2 tantas veces como switches a uno
-		breq OVF							; Overflow cuando hay 8 bits (128 << 1 = 256 -> $00)
+		lsl r16							; Lo multiplicamos por 2 tantas veces como switches a uno
+		breq OVF						; Overflow cuando hay 8 bits (128 << 1 = 256 -> $00)
 		dec r17
 		brne SHIFT_LOW
 	
-	SET_PWM:								; Si r17 <= 8 switches
+	SET_PWM:							; Si r17 <= 8 switches
 		out OCR1AL, r16						
 		sei
 		reti
 
-	OVF:									; si r17 > 8 switches
+	OVF:								; si r17 > 8 switches
 		out OCR1AL, r16
 		
 		ldi r16, $01
