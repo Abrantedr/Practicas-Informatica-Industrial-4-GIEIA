@@ -7,3 +7,15 @@ cmake-build-debug/
 # Practice 2
 
 Practica 2/ejercicios1_8/main.cpp
+
+# Practice 3
+
+*.bat
+*.tmp
+*.aps
+*.aws
+*.hex
+*.map
+*.obj
+*.mp4
+*.png
