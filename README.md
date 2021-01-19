@@ -53,3 +53,16 @@
 ==== prueba62 CORRECTA   "ModbusTCP2Multiple: Escribimos digitales únicas y multiples (0x05 y 0x0F)"
 
 4. Realiza una sola prueba escribiendo `make exe<número de la prueba>` (Ej. `make exe42`)
+
+## Práctica 3
+1. Abre AVR Studio (4.19) y crea un nuevo proyecto (Atmel AVR Assembler).
+2. Dale un nombre válido al proyecto y al archivo `.asm`.
+3. Debug platform: `AVR Simulator`. Device: `AT90S8515`.
+4. Copia el código fuente de `Practica 3.asm` en tu archivo `.asm`.
+5. Copia el archivo de definiciones `8515def.inc` en el mismo directorio que tu archivo `.asm`.
+6. Redirige TODOS los archivos de estímulo (`.sti`) hacia el puerto correspondiente: (Ej. `stimuliPORTA.sti`, al puerto A).
+7. Redirige el archivo `.log` al puerto C. (Ej. `loggingPORTC.log` al puerto C).
+8. Haz un "Build and Run" (F7), y ejecuta el programa (F5).
+9. Observa el archivo `loggingPORTC.log` y represéntalo como una gráfica tipo `stairs`.
+10. El resultado, tras limpiar los datos del pulsador:
+![Alt text](https://i.imgur.com/H92tw8j.png "PWM Output")
