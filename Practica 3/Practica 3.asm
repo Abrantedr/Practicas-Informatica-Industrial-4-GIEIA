@@ -1,8 +1,8 @@
-.include "8515def.inc" ; Incluye el archivo donde están todos los parámetros
+.include "8515def.inc" 					; Incluye el archivo donde están todos los parámetros
 
 ; Vectores de interrupción
-.org $000 		rjmp RESET 		; Reset Handler
-.org INT0addr 	rjmp EXT_INT0 	; IRQ0 Handler
+.org $000 		rjmp RESET 			; Reset Handler
+.org INT0addr 		rjmp EXT_INT0 			; IRQ0 Handler
 reti 							; IRQ1 Handler
 reti 							; Timer1 Capture Handler
 reti 							; Timer1 Compare A Handler
